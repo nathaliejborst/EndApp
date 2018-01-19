@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:icon="@drawable/ic_group_black_24dp">
+    <item
+        android:title="groups"
+        android:id="@+id/groups_item"
+        android:icon="@drawable/ic_group_black_24dp" />
+
+    <item
+        android:title="tasks"
+        android:id="@+id/tasks_item"
+        android:icon="@android:drawable/ic_menu_agenda" />
+
+</menu>
