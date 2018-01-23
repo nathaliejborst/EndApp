@@ -2,39 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="105dp"
     android:orientation="vertical"
-    tools:context="com.example.nathalie.endapp.GroupsFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="65dp">
-
-        <TextView
-            android:layout_marginTop="25dp"
-            android:id="@+id/group_name_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textSize="24dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="12dp"
-            android:visibility="invisible"/>
-
-        <Button
-            android:id="@+id/add_group_button"
-            android:layout_marginTop="25dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:background="@android:color/transparent"
-            android:text="Add group" />
-
-    </FrameLayout>
-
-
+    tools:context="com.example.nathalie.endapp.CreateGroupFragment">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -43,10 +13,11 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
 
             <EditText
-                android:id="@+id/input_find_by_email"
+                android:id="@+id/input_find_by_email1"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:singleLine="true" />
@@ -54,12 +25,11 @@
         </android.support.design.widget.TextInputLayout>
 
         <Button
-            android:id="@+id/find_button"
+            android:id="@+id/find_button1"
             android:layout_marginStart="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:gravity="center"
+            android:layout_gravity="center"
             android:background="@android:color/transparent"
             android:text="FIND" />
 
@@ -69,7 +39,7 @@
         android:id="@+id/result_list"
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="120dp"
         android:layout_marginBottom="10dp">
 
 

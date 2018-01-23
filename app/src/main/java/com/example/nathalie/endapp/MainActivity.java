@@ -1,15 +1,8 @@
 package com.example.nathalie.endapp;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +11,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.Toast;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
@@ -28,14 +20,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnMenuTabClickListener;
-import com.roughike.bottombar.OnTabClickListener;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -43,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     BottomNavigationView bottomNavigationView;
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
+    private String currentUser = "";
 
     private CompactCalendarView compactCalendar;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM- yyyy", Locale.getDefault());
@@ -65,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // Get user's name from Firebase
 //        getFromDB();
+        getUserDetails();
+        open_calendar.setText("Welcome " + currentUser);
 
 
     }
@@ -107,9 +96,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onGroupsItemClicked () {
         Toast.makeText(MainActivity.this, "Groups_bottom_bar", Toast.LENGTH_SHORT).show();
 
-        GroupsFragment groupsFragment = new GroupsFragment();
+
+
+        GroupnameFragment groupnameFragment = new GroupnameFragment();
         getSupportFragmentManager().beginTransaction().
-                replace(R.id.activity_main, groupsFragment).commit();
+                replace(R.id.fragment_container, groupnameFragment).commit();
 
     }
 
@@ -152,6 +143,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         return false;
                     }
                 });
+
+    }
+
+    public void getUserDetails () {
+
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            mDatabase.child("users")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User aUser = dataSnapshot.child(String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getUid())).getValue(User.class);
+                            currentUser = aUser.username;
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.w("Database error", "onCancelled: " + databaseError.getMessage());
+                        }
+                    });
+        }
+
+
 
     }
 
