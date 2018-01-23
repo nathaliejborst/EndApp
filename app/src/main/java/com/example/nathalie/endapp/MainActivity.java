@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +22,12 @@ import android.widget.DatePicker;
 import android.widget.Toast;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
 import com.roughike.bottombar.OnTabClickListener;
@@ -33,7 +40,9 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private Button open_calendar;
-    private BottomBar mBottomBar;
+    BottomNavigationView bottomNavigationView;
+    private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
 
     private CompactCalendarView compactCalendar;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM- yyyy", Locale.getDefault());
@@ -43,55 +52,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Get instance and referance from Firebase
+        mAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
         open_calendar = (Button) findViewById(R.id.calendar_button);
         open_calendar.setOnClickListener(this);
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)
-                findViewById(R.id.bottom_nav);
+        // Initialize bottom navigation bar
+        bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
+        bottomNavigation();
 
+        // Get user's name from Firebase
+//        getFromDB();
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.groups_item2:
-                                Toast.makeText(MainActivity.this, "Groups_bottom_bar", Toast.LENGTH_SHORT).show();
-                                GroupsFragment groupsFragment = new GroupsFragment();
-                                getSupportFragmentManager().beginTransaction().
-                                        replace(R.id.activity_main, groupsFragment).commit();
-                                break;
-                            case R.id.tasks_item2:
-                                Toast.makeText(MainActivity.this, "Tasks_bottom_bar", Toast.LENGTH_SHORT).show();
-                                break;
-                        }
-                        return false;
-                    }
-                });
-
-
-
-
-
-//        mBottomBar = BottomBar.attach(this, savedInstanceState);
-//        mBottomBar.setItemsFromMenu(R.menu.top_nav_bar2, new OnMenuTabClickListener() {
-//            @Override
-//            public void onMenuTabSelected(int menuItemId) {
-//                if(menuItemId == R.id.groups_item2) {
-//                    GroupsFragment groupsFragment = new GroupsFragment();
-//                    getSupportFragmentManager().beginTransaction().
-//                            replace(R.id.activity_main, groupsFragment).commit();
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onMenuTabReSelected(int menuItemId) {
-//                mBottomBar.mapColorForTab(0, "#8FA2B5");
-//                mBottomBar.mapColorForTab(1, "#8FA2B5");
-//
-//            }
-//        });
 
     }
 
@@ -129,6 +103,58 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
     }
+
+    public void onGroupsItemClicked () {
+        Toast.makeText(MainActivity.this, "Groups_bottom_bar", Toast.LENGTH_SHORT).show();
+
+        GroupsFragment groupsFragment = new GroupsFragment();
+        getSupportFragmentManager().beginTransaction().
+                replace(R.id.activity_main, groupsFragment).commit();
+
+    }
+
+    public void getFromDB () {
+
+        ValueEventListener postListener = new ValueEventListener() {
+
+            @Override
+
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User aUser = dataSnapshot.child("users").child(String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getUid())).getValue(User.class);
+                String username = String.valueOf(aUser.username);
+            }
+
+
+
+            @Override
+
+            public void onCancelled(DatabaseError databaseError) {
+
+
+            }
+        };
+        mDatabase.addValueEventListener(postListener);
+    }
+
+    public void bottomNavigation () {
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.groups_item2:
+                                onGroupsItemClicked();
+                                break;
+                            case R.id.tasks_item2:
+                                Toast.makeText(MainActivity.this, "Tasks_bottom_bar", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                        return false;
+                    }
+                });
+
+    }
+
 
 
 

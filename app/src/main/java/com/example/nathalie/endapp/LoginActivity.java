@@ -147,7 +147,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             // Re-directs to main activity if registering is successful
                             if(task.isSuccessful()) {
                                 // Add user to Firebase with own name
-                                writeNewUser(name_input.getText().toString());
+                                writeNewUser(name_input.getText().toString(), getEmail );
 
                                 mProgress.dismiss();
 
@@ -169,10 +169,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     // Add new user to database
-    private void writeNewUser(String name) {
+    private void writeNewUser(String name, String email) {
         // Get unique userID from Firebase
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        User user = new User(name);
+        User user = new User(name, email);
         mDatabase.child("users").child(userID).setValue(user);
     }
 

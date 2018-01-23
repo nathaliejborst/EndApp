@@ -13,7 +13,7 @@
         android:id="@+id/calendar_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:text="Hello" />
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_nav"
@@ -21,5 +21,14 @@
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
         app:menu="@menu/top_nav_bar2"/>
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/calendar_button"
+        android:text="Button" />
 
 </RelativeLayout>
