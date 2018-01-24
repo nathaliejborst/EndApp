@@ -47,22 +47,17 @@ public class GroupnameFragment extends Fragment {
                     Toast.makeText(getActivity(), "Please fill in a group name", Toast.LENGTH_SHORT).show();
                 } else {
 
-//                    newActivity ();
-
                     // Create bundle to transfer groupname to next fragment
                     Bundle bundle = new Bundle();
                     bundle.putString("Group name", enteredGroupName.getText().toString());
 
-                    // Create new CreateGroupfragment and transaction
-//                    CreateGroupFragment creategroupFragment = new CreateGroupFragment();
-//                    creategroupFragment.setArguments(bundle);
 
                     FindUsersFragment findUsersFragment = new FindUsersFragment();
                     findUsersFragment.setArguments(bundle);
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
                     // Replace fragment
-                    transaction.replace(R.id.frame1, findUsersFragment);
+                    transaction.replace(R.id.frame, findUsersFragment);
                     transaction.addToBackStack(null);
 
 
@@ -82,10 +77,6 @@ public class GroupnameFragment extends Fragment {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    public void newActivity () {
-        Intent intent = new Intent(getActivity(), BackgroundActivity.class);
-        getActivity().startActivity(intent);
-    }
     public void killFrag() {
         addGroup.setVisibility(View.GONE);
         enteredGroupName.setVisibility(View.GONE);

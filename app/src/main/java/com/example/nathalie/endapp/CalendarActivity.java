@@ -23,14 +23,17 @@ public class CalendarActivity extends AppCompatActivity implements DatePickerDia
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendar);
 
-        Button button = (Button) findViewById(R.id.button2);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DialogFragment datePicker = new CalenderDialog();
-                datePicker.show(getSupportFragmentManager(), "date picker");
-            }
-        });
+        DialogFragment datePicker = new CalenderDialog();
+        datePicker.show(getSupportFragmentManager(), "date picker");
+
+//        Button button = (Button) findViewById(R.id.button2);
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                DialogFragment datePicker = new CalenderDialog();
+//                datePicker.show(getSupportFragmentManager(), "date picker");
+//            }
+//        });
     }
 
     @Override

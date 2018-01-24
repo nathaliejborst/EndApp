@@ -74,7 +74,7 @@ public class CreateGroupFragment extends Fragment implements View.OnClickListene
         addGroup = (Button) view.findViewById(R.id.add_group_button);
         createGroup = (Button) view.findViewById(R.id.submit_group_button);
         usersToAdd = (TextView) view.findViewById(R.id.users_to_add);
-        searchUser = (EditText) view.findViewById(R.id.input_find_by_email);
+//        searchUser = (EditText) view.findViewById(R.id.input_find_by_email);
 
         findUsers.setOnClickListener(new View.OnClickListener() {
             @Override

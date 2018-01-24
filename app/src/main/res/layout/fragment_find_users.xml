@@ -6,79 +6,136 @@
     android:orientation="vertical"
     tools:context="com.example.nathalie.endapp.FindUsersFragment">
 
-
-    <TextView
-        android:id="@+id/received_group_name_tv"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="18dp"
-        android:background="@color/bb_inActiveBottomBarItemColor"
-        android:textColor="#ffffff"
-        android:text="" />
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_marginTop="15dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="11dp"
-        android:text="Type in first characters of e-mail address to find user" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal">
-
-        <android.support.design.widget.TextInputLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center">
+            android:layout_height="300dp"
+            android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/input_find_by_email"
-                android:layout_weight="4"
+            <FrameLayout
+                android:id="@+id/frame1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="E-mail address"
-                android:textSize="14dp"
-                android:textStyle="italic"
-                android:singleLine="true" />
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:layout_marginEnd="5dp">
 
-        </android.support.design.widget.TextInputLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-        <Button
-            android:id="@+id/find_button"
-            android:layout_weight="2"
-            android:layout_marginStart="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@android:color/transparent"
-            android:text="FIND" />
+                    <TextView
+                        android:id="@+id/received_group_name_tv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/bb_inActiveBottomBarItemColor"
+                        android:text=""
+                        android:textColor="#ffffff"
+                        android:textSize="18dp" />
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_marginTop="3dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="11dp"
+                        android:text="Type in first characters of e-mail address to find user" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal">
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_gravity="center">
+
+                            <EditText
+                                android:id="@+id/input_find_by_email"
+                                android:layout_weight="4"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="E-mail address"
+                                android:textSize="14dp"
+                                android:textStyle="italic"
+                                android:singleLine="true" />
+
+                        </android.support.design.widget.TextInputLayout>
+
+                        <Button
+                            android:id="@+id/find_button"
+                            android:layout_weight="2"
+                            android:layout_marginStart="5dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@android:color/transparent"
+                            android:text="FIND" />
 
 
-    </LinearLayout>
+                    </LinearLayout>
 
-    <ListView
-        android:id="@+id/results_lv"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="20dp" >
+                    <ListView
+                        android:id="@+id/results_lv"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_marginTop="20dp" >
 
 
-    </ListView>
+                    </ListView>
 
-        <ImageButton
-            android:id="@+id/infoButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_info_details" />
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_delete" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/frame2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="4">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/create_group_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="26dp"
+                        android:textSize="11dp"
+                        android:textAlignment="viewEnd"
+                        android:textColor="#ffffff"
+                        android:background="@color/bb_inActiveBottomBarItemColor"
+                        android:layout_gravity="right"
+                        android:text="Create group  " />
+
+                    <TextView
+                        android:id="@+id/users_to_add_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="3dp"
+                        android:textSize="11dp"
+                        android:text="Selected users you want to add to your group" />
+
+                    <ListView
+                        android:id="@+id/users_to_add_lv"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+
+
+
+            </FrameLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+
 
 </LinearLayout>

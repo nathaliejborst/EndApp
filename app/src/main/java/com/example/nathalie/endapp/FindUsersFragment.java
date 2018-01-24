@@ -35,6 +35,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 
 /**
@@ -44,18 +45,17 @@ public class FindUsersFragment extends Fragment {
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
 
-    TextView receivedGroupName;
+    TextView receivedGroupName, showUsersToAdd;
     EditText searchUser;
-    ListView resultsList;
-    Button findUsers;
-    ImageButton infoButton;
+    ListView resultsList, usersToAddList;
+    Button findUsers, createGroup;
 
-    private String groupName;
+    private String groupName, groupID;
     private ArrayList<String> resultUsersList= new ArrayList<String>();
     private ArrayList<User> resultDetailsList= new ArrayList<User>();
 
-    private ArrayList<String> nextFragmentID= new ArrayList<String>();
-    private ArrayList<String> nextFragmentName= new ArrayList<String>();
+    private ArrayList<String> addUsersList= new ArrayList<String>();
+    private ArrayList<User> addUserDetailsList= new ArrayList<User>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,12 +73,17 @@ public class FindUsersFragment extends Fragment {
             String myString = getArguments().getString("Group name", "Supercalifragilisticexpialidocious");
         }
 
-        // Get views from XML
+        // Get views from XML for left frame
         receivedGroupName = (TextView) view.findViewById(R.id.received_group_name_tv);
         searchUser = (EditText) view.findViewById(R.id.input_find_by_email);
         findUsers = (Button) view.findViewById(R.id.find_button);
         resultsList = (ListView) view.findViewById(R.id.results_lv);
-        infoButton = (ImageButton) view.findViewById(R.id.infoButton);
+
+        // Get views from XML for right frame
+        showUsersToAdd = (TextView) view.findViewById(R.id.users_to_add_tv);
+        usersToAddList = (ListView) view.findViewById(R.id.users_to_add_lv);
+        createGroup = (Button) view.findViewById(R.id.create_group_button);
+
 
         // Show groupname on top of fragment
         receivedGroupName.setText(groupName);
@@ -95,18 +100,29 @@ public class FindUsersFragment extends Fragment {
                 hideKeyboard(getContext(), getView());
             }
         });
-        // Handle on click for the search button
-        infoButton.setOnClickListener(new View.OnClickListener() {
+
+        // Handle on click for the create group button
+        createGroup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                infoDialog();
+
+                // Generate random group ID in case of identical group names
+                groupID = Long.toHexString(Double.doubleToLongBits(Math.random()));
+
+                // Add group to every user's node in Firebase
+                createGroup();
+
+
             }
         });
-
         return view;
     }
 
     public void searchUser (String search) {
+        // Clear previous result lists
+        resultUsersList.clear();
+        resultDetailsList.clear();
+
         // Lookup in Firebase users that match e-mail addresses with entered search item
         mDatabase.child("users").orderByChild("email").startAt(search).endAt(search + "\uf8ff")
                 .addValueEventListener(new ValueEventListener() {
@@ -125,7 +141,7 @@ public class FindUsersFragment extends Fragment {
                             resultDetailsList.add(aUser);
                         }
                         // Show found users in listview
-                        fillSimpleListView(resultUsersList);
+                        fillSimpleListView(resultUsersList, resultsList);
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
@@ -135,48 +151,56 @@ public class FindUsersFragment extends Fragment {
     }
 
     public void addUserToGroup (int positionClicked) {
-        // Create bundle to transfer groupname to next fragment
-        Bundle bundle = new Bundle();
-        bundle.putStringArrayList("ID list", nextFragmentID);
-        bundle.putStringArrayList("User list", nextFragmentName);
-        bundle.putString("User ID", resultDetailsList.get(positionClicked).id);
-        bundle.putString("User name", resultDetailsList.get(positionClicked).username);
-        bundle.putString("User email", resultDetailsList.get(positionClicked).email);
-        bundle.putString("Group name", groupName);
+        // Add username to list to show in the listview
+        addUsersList.add(resultDetailsList.get(positionClicked).username);
+        // Add user details in list in order to add right user to Firebase
+        addUserDetailsList.add(resultDetailsList.get(positionClicked));
 
-        addGroupFragment addFragment = new addGroupFragment();
-        addFragment.setArguments(bundle);
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-        // Replace fragment
-        transaction.replace(R.id.frame2, addFragment);
-        transaction.addToBackStack(null);
-
-        // Commit the transaction
-        transaction.commit();
+        // Fill listview on right side of screen
+        fillSimpleListView(addUsersList, usersToAddList);
     }
 
-    public void addUserToList (int i) {
-        nextFragmentID.add(resultDetailsList.get(i).id);
-        Log.d(" hallo f", " " + nextFragmentID);
-        nextFragmentName.add(resultDetailsList.get(i).username);
-        Log.d(" hallo f", " " + nextFragmentName);
+    public void addGroupToUsers (final User selectedUser) {
+        mDatabase.child("users").child(selectedUser.id).child("groups").child(groupID).child("groupname").setValue(groupName);
     }
 
-    public void fillSimpleListView (ArrayList list) {
+    public void createGroup () {
+
+        mDatabase.child("groups").child(groupID).child("groupname").setValue(groupName);
+
+        // Add group to every user in Firebase
+        for (int i = 0; i < addUserDetailsList.size(); i++) {
+            Log.d("hallo _ user: ", "" + addUserDetailsList.get(i).id);
+            mDatabase.child("users").child(addUserDetailsList.get(i).id).child("personal groups").child(groupID).child("groupname").setValue(groupName);
+            mDatabase.child("groups").child(groupID).child("users").child(addUserDetailsList.get(i).id).setValue(addUserDetailsList.get(i).username);
+        }
+    }
+
+    public void fillSimpleListView (final ArrayList list, final ListView lv) {
         // Initialize list adapter
         ListAdapter theAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
 
         // Set the adapter
-        resultsList.setAdapter(theAdapter);
-        resultsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lv.setAdapter(theAdapter);
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
+                // Make sure on click handles the right listview
+                int listViewID = lv.getId();
 
-                // Add user to group on click
-                addUserToList(i);
-                addUserToGroup(i);
-                Toast.makeText(getActivity(), String.valueOf(resultsList.getItemAtPosition(i)), Toast.LENGTH_SHORT).show();
+                Log.d("hallo listview:", "" + listViewID);
+
+                // Left listview
+                if (listViewID == 2131230884) {
+                    // Show clicked user in listview on right side of screen
+                    addUserToGroup(i);
+                }
+                // Right listview
+                if (listViewID == 2131230961) {
+                    // Remove selected user from users to add list
+                    addUsersList.remove(i);
+                    usersToAddList.invalidateViews();
+                }
             }
         });
     }

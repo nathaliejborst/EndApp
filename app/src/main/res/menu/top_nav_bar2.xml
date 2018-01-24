@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/profile_item2"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="profile" />
+    <item
+        android:id="@+id/calendar_item2"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="calendar" />
+    <item
         android:title="groups"
         android:id="@+id/groups_item2"
         android:icon="@drawable/ic_group_black_24dp" />
-
-    <item
-    android:title="tasks"
-    android:id="@+id/tasks_item2"
-    android:icon="@android:drawable/ic_menu_agenda" />
 
 </menu>

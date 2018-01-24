@@ -52,6 +52,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:hint="E-mail address"
+            android:text="h@h.nl"
             android:layout_gravity="center"/>
 
     </android.support.design.widget.TextInputLayout>
@@ -67,6 +68,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:hint="Password"
+            android:text="hoihoi"
             android:layout_gravity="center"/>
 
     </android.support.design.widget.TextInputLayout>

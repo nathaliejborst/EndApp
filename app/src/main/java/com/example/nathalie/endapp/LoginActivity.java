@@ -112,7 +112,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             mProgress.dismiss();
-
                             // Re-directs to main activity if logging in is successful
                             if(task.isSuccessful()) {
 

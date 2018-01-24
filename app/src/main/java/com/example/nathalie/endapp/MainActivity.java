@@ -3,6 +3,9 @@ package com.example.nathalie.endapp;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.DialogFragment;
+import android.app.DatePickerDialog;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,53 +14,55 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.Toast;
 
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
     private Button open_calendar;
     BottomNavigationView bottomNavigationView;
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
     private String currentUser = "";
 
-    private CompactCalendarView compactCalendar;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM- yyyy", Locale.getDefault());
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Check if user is logged in, re-direct to login screen if not
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Log.d("hallo null??", "");
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+        }
+
         // Get instance and referance from Firebase
         mAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        open_calendar = (Button) findViewById(R.id.calendar_button);
-        open_calendar.setOnClickListener(this);
 
         // Initialize bottom navigation bar
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
         bottomNavigation();
 
-        // Get user's name from Firebase
-//        getFromDB();
-        getUserDetails();
-        open_calendar.setText("Welcome " + currentUser);
+        checkForGroups();
 
 
     }
-
 
 
     @Override
@@ -82,51 +87,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.calendar_button:
-                Intent intent = new Intent(getApplicationContext(), CalendarActivity.class);
-                startActivity(intent);
-                break;
-
-        }
-    }
-
-    public void onGroupsItemClicked () {
-        Toast.makeText(MainActivity.this, "Groups_bottom_bar", Toast.LENGTH_SHORT).show();
-
-
-
-        GroupnameFragment groupnameFragment = new GroupnameFragment();
-        getSupportFragmentManager().beginTransaction().
-                replace(R.id.fragment_container, groupnameFragment).commit();
-
-    }
-
-    public void getFromDB () {
-
-        ValueEventListener postListener = new ValueEventListener() {
-
-            @Override
-
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                User aUser = dataSnapshot.child("users").child(String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getUid())).getValue(User.class);
-                String username = String.valueOf(aUser.username);
-            }
-
-
-
-            @Override
-
-            public void onCancelled(DatabaseError databaseError) {
-
-
-            }
-        };
-        mDatabase.addValueEventListener(postListener);
-    }
-
     public void bottomNavigation () {
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -136,38 +96,89 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             case R.id.groups_item2:
                                 onGroupsItemClicked();
                                 break;
-                            case R.id.tasks_item2:
-                                Toast.makeText(MainActivity.this, "Tasks_bottom_bar", Toast.LENGTH_SHORT).show();
+                            case R.id.calendar_item2:
+                                onCalendarItemClicked();
+                                break;
+                            case R.id.profile_item2:
+                                onProfileItemClicked();
                                 break;
                         }
                         return false;
                     }
                 });
-
-    }
-
-    public void getUserDetails () {
-
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            mDatabase.child("users")
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            User aUser = dataSnapshot.child(String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getUid())).getValue(User.class);
-                            currentUser = aUser.username;
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Log.w("Database error", "onCancelled: " + databaseError.getMessage());
-                        }
-                    });
-        }
-
-
-
     }
 
 
+    // Open groups fragment
+    public void onGroupsItemClicked () {
+        GroupnameFragment groupnameFragment = new GroupnameFragment();
+        getSupportFragmentManager().beginTransaction().
+                replace(R.id.frame, groupnameFragment).commit();
+    }
 
+    public void onCalendarItemClicked () {
+
+        DialogFragment datePicker = new CalenderDialog();
+        datePicker.show(getSupportFragmentManager(), "date picker");
+
+
+
+
+
+        // Start new activity to open calendar
+//        Intent intent = new Intent(getApplicationContext(), CalendarActivity.class);
+//        startActivity(intent);
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.YEAR, year);
+        c.set(Calendar.MONTH, month);
+        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+        String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(c.getTime());
+
+        Toast.makeText(MainActivity.this, currentDate, Toast.LENGTH_SHORT).show();
+
+    }
+
+    public void onProfileItemClicked () {
+        ProfileFragment profileFragment = new ProfileFragment();
+        getSupportFragmentManager().beginTransaction().
+                replace(R.id.frame, profileFragment).commit();
+
+    }
+
+    public void checkForGroups () {
+
+        FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        mDatabase.child("users")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        String currentUserID = dataSnapshot.child("users").child(String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getUid())).getKey();
+
+                        // Check if user already is in at least one group
+                        if (dataSnapshot.child(currentUserID).getChildrenCount() == 3) {
+//                            ShowGroupsFragment showGroupFragment = new ShowGroupsFragment();
+//                            getSupportFragmentManager().beginTransaction().
+//                                    replace(R.id.frame, showGroupFragment).commit();
+
+                        } else {
+                            GroupnameFragment groupnameFragment = new GroupnameFragment();
+                            getSupportFragmentManager().beginTransaction().
+                                    replace(R.id.frame, groupnameFragment).commit();
+                        }
+
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
+                    }
+                });
+    }
 
 }
