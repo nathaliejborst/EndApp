@@ -58,10 +58,6 @@ public class GroupnameFragment extends Fragment {
 
                     // Replace fragment
                     transaction.replace(R.id.frame, findUsersFragment);
-                    transaction.addToBackStack(null);
-
-
-                    killFrag();
 
                     // Commit the transaction
                     transaction.commit();
@@ -76,12 +72,4 @@ public class GroupnameFragment extends Fragment {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
-
-    public void killFrag() {
-        addGroup.setVisibility(View.GONE);
-        enteredGroupName.setVisibility(View.GONE);
-        hideKeyboard(getContext(), getView());
-    }
-
-
 }

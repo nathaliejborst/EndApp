@@ -203,8 +203,16 @@ public class FindUsersFragment extends Fragment {
                 Log.d("hallo FU name", "" + U.currentUsername);
                 //////////////////////////
 
+                switch(lv.getId()){
+                    case R.id.results_lv:
+                        Log.d("hallo results:", "" + listViewID);
+                        break;
+                    case R.id.users_to_add_lv:
+                        Log.d("hallo users To add:", "" + listViewID);
+                        break;
+                }
 
-                Log.d("hallo listview:", "" + listViewID);
+                Log.d("hallo listview name?:", "" + String.valueOf(listViewID));
 
                 // Left listview
                 if (listViewID == 2131230898) {

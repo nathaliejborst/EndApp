@@ -1,33 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:animateLayoutChanges="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.example.nathalie.endapp.LoginActivity">
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="?android:attr/textColorLinkInverse" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_marginTop="-330dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/achtergrond_corveetwee" />
+
+    <LinearLayout
+        android:id="@+id/linearlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
 
     <ImageView
         android:id="@+id/app_logo"
-        android:paddingTop="85dp"
+        android:paddingTop="60dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@mipmap/ic_launcher_round" />
 
-    <TextView
-        android:id="@+id/app_name"
-        android:layout_marginTop="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="C O R V E E"
-        android:textStyle="bold"
-        android:textColor="@color/mainOrange"/>
+        <TextView
+            android:id="@+id/app_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="C O R V E E"
+            android:textColor="@color/mainOrange"
+            android:textStyle="bold" />
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_marginTop="5dp"
+        <android.support.design.widget.TextInputLayout
+        android:layout_marginTop="80dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -135,4 +152,5 @@
 
         </LinearLayout>
     </FrameLayout>
-</LinearLayout>
+    </LinearLayout>
+</FrameLayout>

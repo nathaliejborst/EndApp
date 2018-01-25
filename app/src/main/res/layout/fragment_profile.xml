@@ -1,28 +1,70 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.example.nathalie.endapp.ProfileFragment">
 
-
-    <Button
-        android:id="@+id/log_out_button"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/log_out_line"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/caldroid_transparent"
-        android:textColor="#ff9933"
-        android:text="Log out" />
+        android:layout_marginTop="19dp"
+        android:textColor="@color/mainOrange"
+        android:textSize="6dp"
+        android:text="___________________________________________________" />
 
-    <Button
-        android:id="@+id/button7"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tasks_line"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:layout_marginTop="67dp"
+        android:layout_gravity="right"
+        android:textColor="@color/mainOrange"
+        android:textSize="6dp"
+        android:text="___________________________________________________" />
 
-    <Button
-        android:id="@+id/button8"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/change_name_line"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button" />
-</LinearLayout>
+        android:layout_marginTop="115dp"
+        android:layout_gravity="right"
+        android:textColor="@color/mainOrange"
+        android:textSize="6dp"
+        android:visibility="invisible"
+        android:text="___________________________________________________" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/log_out_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/caldroid_transparent"
+            android:text="Log out"
+            android:textColor="#ff9933" />
+
+        <Button
+            android:id="@+id/tasks_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/caldroid_transparent"
+            android:text="Tasks"
+            android:textColor="#ff9933" />
+
+        <Button
+            android:id="@+id/change_name_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/caldroid_transparent"
+            android:text="Change name"
+            android:textColor="#ff9933"
+            android:visibility="invisible"/>
+    </LinearLayout>
+
+</FrameLayout>

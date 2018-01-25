@@ -43,6 +43,7 @@ public class CalendarFragment extends Fragment {
 
 
         compactCalendar = (CompactCalendarView) view.findViewById(R.id.compactcalendar_view);
+        compactCalendar.setShouldDrawDaysHeader(true);
 
         Event ev1 = new Event(Color.GREEN, 1433701251000L, "Some extra data that I want to store.");
         Event ev2 = new Event(Color.GREEN, 1516889708000L, "Dit is een taak");
