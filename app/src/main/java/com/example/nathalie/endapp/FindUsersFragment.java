@@ -50,7 +50,9 @@ public class FindUsersFragment extends Fragment {
     ListView resultsList, usersToAddList;
     Button findUsers, createGroup;
 
-    private String groupName, groupID;
+    User U;
+
+    private String groupName, groupID, currentUserID, currentUsername;
     private ArrayList<String> resultUsersList= new ArrayList<String>();
     private ArrayList<User> resultDetailsList= new ArrayList<User>();
 
@@ -67,11 +69,14 @@ public class FindUsersFragment extends Fragment {
         mAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        // Get groupname from previous fragment
+        // Get groupname, userID and username from previous fragment
         groupName  = getArguments().getString("Group name");
-        if (this.getArguments() != null) {
-            String myString = getArguments().getString("Group name", "Supercalifragilisticexpialidocious");
-        }
+//        currentUserID = getArguments().getString("userID");
+//        currentUsername = getArguments().getString("username");
+
+        // Initialize user details of current user;
+        U = new User();
+        U.setCurrentuser();
 
         // Get views from XML for left frame
         receivedGroupName = (TextView) view.findViewById(R.id.received_group_name_tv);
@@ -86,7 +91,7 @@ public class FindUsersFragment extends Fragment {
 
 
         // Show groupname on top of fragment
-        receivedGroupName.setText(groupName);
+        receivedGroupName.setText("  " + groupName);
 
         // Handle on click for the search button
         findUsers.setOnClickListener(new View.OnClickListener() {
@@ -111,6 +116,9 @@ public class FindUsersFragment extends Fragment {
 
                 // Add group to every user's node in Firebase
                 createGroup();
+
+                // Show user's groups
+                showGroups();
 
 
             }
@@ -164,6 +172,10 @@ public class FindUsersFragment extends Fragment {
         // Add group child to Firebase
         mDatabase.child("groups").child(groupID).child("groupname").setValue(groupName);
 
+        // Add group to currently logged in user
+        mDatabase.child("users").child(U.currentUserID).child("personal groups").child(groupID).child("groupname").setValue(groupName);
+        mDatabase.child("groups").child(groupID).child("users").child(currentUserID).setValue(U.currentUsername);
+
         // Add group to every user in Firebase
         for (int i = 0; i < addUserDetailsList.size(); i++) {
             Log.d("hallo _ user: ", "" + addUserDetailsList.get(i).id);
@@ -184,15 +196,24 @@ public class FindUsersFragment extends Fragment {
                 // Make sure on click handles the right listview
                 int listViewID = lv.getId();
 
+                ////////////////////////
+                currentUserID = U.currentUserID;
+                currentUsername = U.currentUsername;
+                Log.d("hallo FU id", "" + U.currentUserID);
+                Log.d("hallo FU name", "" + U.currentUsername);
+                //////////////////////////
+
+
                 Log.d("hallo listview:", "" + listViewID);
 
                 // Left listview
-                if (listViewID == 2131230884) {
+                if (listViewID == 2131230898) {
                     // Show clicked user in listview on right side of screen
                     addUserToGroup(i);
                 }
                 // Right listview
-                if (listViewID == 2131230961) {
+                if (listViewID == 2131230978) {
+                    Log.d("hallo listview:", "" + listViewID);
                     // Remove selected user from users to add list
                     addUsersList.remove(i);
                     usersToAddList.invalidateViews();
@@ -205,5 +226,17 @@ public class FindUsersFragment extends Fragment {
     public void hideKeyboard(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public void showGroups () {
+        ShowGroupsFragment showGroupsFragment = new ShowGroupsFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        // Replace fragment
+        transaction.replace(R.id.frame, showGroupsFragment);
+        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
     }
 }

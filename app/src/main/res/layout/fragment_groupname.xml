@@ -6,11 +6,20 @@
     tools:context="com.example.nathalie.endapp.GroupnameFragment">
 
 
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_marginTop="140dp"
+            android:layout_marginBottom="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="15dp"
+            android:text="Create a new group" />
 
         <EditText
             android:id="@+id/groupname_editText"
             android:layout_gravity="center"
-            android:layout_marginTop="170dp"
+
             android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:ellipsize="start"
@@ -20,11 +29,11 @@
 
         <Button
             android:id="@+id/add_group_button"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-
+            android:textColor="@color/mainOrange"
             android:background="@android:color/transparent"
             android:text="OK" />
 </LinearLayout>

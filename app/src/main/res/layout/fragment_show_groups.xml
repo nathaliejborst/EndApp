@@ -5,21 +5,52 @@
     tools:context="com.example.nathalie.endapp.ShowGroupsFragment">
 
     <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="19dp"
+        android:textColor="@color/mainOrange"
+        android:textSize="6dp"
+        android:text="___________________________________________________" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="67dp"
+        android:layout_gravity="right"
+        android:textColor="@color/mainOrange"
+        android:textSize="6dp"
+        android:text="___________________________________________________" />
+
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/hello_blank_fragment" />
+        <Button
+        android:id="@+id/new_group_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/caldroid_transparent"
+        android:textColor="@color/mainOrange"
+        android:text="Add group" />
 
         <Button
-            android:id="@+id/button5"
+            android:id="@+id/show_groups_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add group" />
+            android:background="@color/caldroid_transparent"
+            android:textColor="@color/mainOrange"
+            android:text="Show groups" />
+
+        <ListView
+            android:id="@+id/show_groups_lv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </LinearLayout>
 
 </FrameLayout>

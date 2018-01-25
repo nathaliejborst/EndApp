@@ -6,6 +6,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.DialogFragment;
 import android.app.DatePickerDialog;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -120,10 +121,11 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         // Send user ID to next activity
         Bundle bundle = new Bundle();
         bundle.putString("userID", currentUserID);
+        bundle.putString("username", currentUser);
 
-        GroupnameFragment groupnameFragment = new GroupnameFragment();
+        ShowGroupsFragment showGroupsFragment = new ShowGroupsFragment();
         getSupportFragmentManager().beginTransaction().
-                replace(R.id.frame, groupnameFragment).commit();
+                replace(R.id.frame, showGroupsFragment).commit();
     }
 
     public void onCalendarItemClicked () {
@@ -182,12 +184,12 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     }
 
     public void showCurrentUsername (DataSnapshot dataSnapshot) {
-//        currentUserID = dataSnapshot.child("users").child(String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getUid())).getKey();
-
         currentUser = String.valueOf(dataSnapshot.child(currentUserID).child("username").getValue());
         Log.w("hallo_i", "name " + dataSnapshot.child(currentUserID).child("username").getValue());
         Log.w("hallo_i", "id " + currentUserID);
         top_button.setText("Welcome "  + currentUser);
+
+
     }
 
     public void getGroups (DataSnapshot dataSnapshot) {

@@ -1,5 +1,13 @@
 package com.example.nathalie.endapp;
 
+import android.util.Log;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 
 /**
@@ -10,7 +18,8 @@ public class User {
     public String username;
     public String email;
     public String id;
-//    public ArrayList<String> groups;
+    public String currentUsername;
+    public String currentUserID;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
@@ -20,7 +29,23 @@ public class User {
         this.username = username;
         this.email = email;
         this.id = id;
-//        this.groups = groups;
     }
 
+    public void setCurrentuser () {
+        Log.d("hallo user class", " " + FirebaseAuth.getInstance().getCurrentUser().getUid());
+        currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        FirebaseDatabase.getInstance().getReference().child("users")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.d("hallo user class", " " + dataSnapshot.child(currentUserID).child("username").getValue());
+                        currentUsername = String.valueOf(dataSnapshot.child(currentUserID).child("username").getValue());
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
+                    }
+                });
+    }
 }
