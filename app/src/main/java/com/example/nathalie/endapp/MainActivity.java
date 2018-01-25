@@ -29,13 +29,15 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
-    private Button open_calendar;
+    private Button top_button;
     BottomNavigationView bottomNavigationView;
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
+    private String currentUserID = null;
     private String currentUser = "";
 
     @Override
@@ -50,16 +52,19 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             startActivity(intent);
         }
 
-        // Get instance and referance from Firebase
+        // Get instance and referance from Firebase and access corresponding data
         mAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        accesDB();
 
+        // Get views from XML
+        top_button = (Button) findViewById(R.id.top_button);
 
         // Initialize bottom navigation bar
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
         bottomNavigation();
 
-        checkForGroups();
 
 
     }
@@ -111,6 +116,11 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
     // Open groups fragment
     public void onGroupsItemClicked () {
+
+        // Send user ID to next activity
+        Bundle bundle = new Bundle();
+        bundle.putString("userID", currentUserID);
+
         GroupnameFragment groupnameFragment = new GroupnameFragment();
         getSupportFragmentManager().beginTransaction().
                 replace(R.id.frame, groupnameFragment).commit();
@@ -121,7 +131,13 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         DialogFragment datePicker = new CalenderDialog();
         datePicker.show(getSupportFragmentManager(), "date picker");
 
+        // Send user ID to next activity
+        Bundle bundle = new Bundle();
+        bundle.putString("userID", currentUserID);
 
+        CalendarFragment calendarFragment = new CalendarFragment();
+        getSupportFragmentManager().beginTransaction().
+                replace(R.id.frame, calendarFragment).commit();
 
 
 
@@ -150,28 +166,12 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
     }
 
-    public void checkForGroups () {
-
-        FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
+    public void accesDB () {
         mDatabase.child("users")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-
-                        String currentUserID = dataSnapshot.child("users").child(String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getUid())).getKey();
-
-                        // Check if user already is in at least one group
-                        if (dataSnapshot.child(currentUserID).getChildrenCount() == 3) {
-//                            ShowGroupsFragment showGroupFragment = new ShowGroupsFragment();
-//                            getSupportFragmentManager().beginTransaction().
-//                                    replace(R.id.frame, showGroupFragment).commit();
-
-                        } else {
-                            GroupnameFragment groupnameFragment = new GroupnameFragment();
-                            getSupportFragmentManager().beginTransaction().
-                                    replace(R.id.frame, groupnameFragment).commit();
-                        }
+                        showCurrentUsername(dataSnapshot);
 
                     }
                     @Override
@@ -179,6 +179,31 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                         Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
                     }
                 });
+    }
+
+    public void showCurrentUsername (DataSnapshot dataSnapshot) {
+//        currentUserID = dataSnapshot.child("users").child(String.valueOf(FirebaseAuth.getInstance().getCurrentUser().getUid())).getKey();
+
+        currentUser = String.valueOf(dataSnapshot.child(currentUserID).child("username").getValue());
+        Log.w("hallo_i", "name " + dataSnapshot.child(currentUserID).child("username").getValue());
+        Log.w("hallo_i", "id " + currentUserID);
+        top_button.setText("Welcome "  + currentUser);
+    }
+
+    public void getGroups (DataSnapshot dataSnapshot) {
+
+        // Check if user already is in at least one group
+        if (dataSnapshot.child(currentUserID).getChildrenCount() == 3) {
+//                            ShowGroupsFragment showGroupFragment = new ShowGroupsFragment();
+//                            getSupportFragmentManager().beginTransaction().
+//                                    replace(R.id.frame, showGroupFragment).commit();
+
+        } else {
+            GroupnameFragment groupnameFragment = new GroupnameFragment();
+            getSupportFragmentManager().beginTransaction().
+                    replace(R.id.frame, groupnameFragment).commit();
+        }
+
     }
 
 }

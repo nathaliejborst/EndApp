@@ -9,7 +9,7 @@
     tools:context="com.example.nathalie.endapp.MainActivity">
 
         <Button
-            android:id="@+id/calendar_button"
+            android:id="@+id/top_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#66b2ff"

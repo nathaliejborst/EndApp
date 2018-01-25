@@ -160,12 +160,8 @@ public class FindUsersFragment extends Fragment {
         fillSimpleListView(addUsersList, usersToAddList);
     }
 
-    public void addGroupToUsers (final User selectedUser) {
-        mDatabase.child("users").child(selectedUser.id).child("groups").child(groupID).child("groupname").setValue(groupName);
-    }
-
     public void createGroup () {
-
+        // Add group child to Firebase
         mDatabase.child("groups").child(groupID).child("groupname").setValue(groupName);
 
         // Add group to every user in Firebase
@@ -203,19 +199,6 @@ public class FindUsersFragment extends Fragment {
                 }
             }
         });
-    }
-
-    public void infoDialog () {
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-        alertDialog.setTitle("Information");
-        alertDialog.setMessage("Search by e-mail address to find a user. The app shows you the usernames found for your search. Click on a user to add the person to your group.");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
     }
 
     // Hides keyboard from screen

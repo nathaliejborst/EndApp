@@ -21,7 +21,6 @@
         </activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".CalendarActivity" />
-        <activity android:name=".BackgroundActivity"></activity>
     </application>
 
 </manifest>
