@@ -28,8 +28,6 @@ public class CalenderDialog extends android.support.v4.app.DialogFragment {
 
         String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(c.getTime());
 
-        Toast.makeText(getActivity().getApplicationContext(), currentDate, Toast.LENGTH_SHORT).show();
-
         return new DatePickerDialog(getActivity(), (DatePickerDialog.OnDateSetListener) getActivity(), year, month, day);
     }
 

@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     private FirebaseAuth mAuth;
     private String currentUserID = null;
     private String currentUser = "";
+    private MenuItem groupsItem, profileItem, calendarItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,10 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
         }
+
+        // Hide bottom navigation bar
+//        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
 
         // Get instance and referance from Firebase and access corresponding data
         mAuth.getInstance();
@@ -70,29 +75,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.top_nav_bar, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.groups_item:
-                Toast.makeText(this, "Groups", Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.tasks_item:
-                Toast.makeText(this, "Tasks", Toast.LENGTH_SHORT).show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     public void bottomNavigation () {
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -100,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.groups_item2:
+
                                 onGroupsItemClicked();
                                 break;
                             case R.id.calendar_item2:
@@ -140,12 +123,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         CalendarFragment calendarFragment = new CalendarFragment();
         getSupportFragmentManager().beginTransaction().
                 replace(R.id.frame, calendarFragment).commit();
-
-
-
-        // Start new activity to open calendar
-//        Intent intent = new Intent(getApplicationContext(), CalendarActivity.class);
-//        startActivity(intent);
     }
 
     @Override
@@ -156,9 +133,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         c.set(Calendar.MONTH, month);
         c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(c.getTime());
-
-        Toast.makeText(MainActivity.this, currentDate, Toast.LENGTH_SHORT).show();
-
     }
 
     public void onProfileItemClicked () {
@@ -205,7 +179,11 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             getSupportFragmentManager().beginTransaction().
                     replace(R.id.frame, groupnameFragment).commit();
         }
+    }
 
+    // Prevents user to go back to login activity
+    @Override
+    public void onBackPressed() {
     }
 
 }

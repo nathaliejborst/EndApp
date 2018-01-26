@@ -10,7 +10,7 @@
         android:title="calendar" />
     <item
         android:title="groups"
+        android:iconTint="@color/colorPrimary"
         android:id="@+id/groups_item2"
         android:icon="@drawable/ic_group_black_24dp" />
-
 </menu>

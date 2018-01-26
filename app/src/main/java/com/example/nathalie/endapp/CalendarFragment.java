@@ -63,6 +63,9 @@ public class CalendarFragment extends Fragment {
             public void onDayClick(Date dateClicked) {
                 Context context = getContext();
 
+                // Clear list otherwise tasks will be shown multiple times if date is clicked more than once
+
+                dateEvents.clear();
                 List<Event> events = compactCalendar.getEvents(dateClicked);
 
                 for (int i = 0; i < events.size(); i++) {

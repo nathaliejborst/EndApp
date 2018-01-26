@@ -55,6 +55,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             // start app
         }
 
+        // Hide bottom navigation bar
+//        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
         mProgress = new ProgressDialog(this);
 
         // Initialize views from XML

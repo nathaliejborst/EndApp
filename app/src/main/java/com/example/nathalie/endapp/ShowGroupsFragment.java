@@ -37,9 +37,10 @@ public class ShowGroupsFragment extends Fragment {
     private FirebaseAuth mAuth;
 
     private Button newGroupButton, showGroupsButton;
-    private TextView lineAddGroup, lineShowGroups;
+    private TextView lineAddGroup, lineShowGroups, addTaskTV;
     private ListView showUsersGroups;
     private ArrayList<String> usersGroupsList= new ArrayList<String>();
+    private ArrayList<String> usersGroupsIDList= new ArrayList<String>();
     User U;
 
 
@@ -64,6 +65,7 @@ public class ShowGroupsFragment extends Fragment {
         showUsersGroups = (ListView) view.findViewById(R.id.show_groups_lv);
         lineAddGroup = (TextView) view.findViewById(R.id.add_group_line);
         lineShowGroups = (TextView) view.findViewById(R.id.show_groups_line);
+
 
 
         // Fill listview with groups from user
@@ -105,9 +107,10 @@ public class ShowGroupsFragment extends Fragment {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         // Get users details for every user in search result
                         for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-
-                            Log.w("hallo_GROUPS", "groups? " + childDataSnapshot.child("groupname").getValue());
                             usersGroupsList.add(String.valueOf(childDataSnapshot.child("groupname").getValue()));
+                            usersGroupsIDList.add(String.valueOf(childDataSnapshot.getKey()));
+
+
 
                         }
                     }
@@ -127,17 +130,19 @@ public class ShowGroupsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
 
-                showGroupDetails(showUsersGroups.getItemAtPosition(i).toString());
+                showGroupDetails(showUsersGroups.getItemAtPosition(i).toString(), usersGroupsIDList.get(i));
             }
         });
     }
 
-    public void showGroupDetails (String groupName) {
+    public void showGroupDetails (String groupName, String groupID) {
         // Create bundle to transfer groupname to next fragment
         Bundle bundle = new Bundle();
         bundle.putString("Group name", groupName);
+        bundle.putString("GroupID", groupID);
 
-        Log.d("hallo group name bundle", "" + groupName);
+        Log.d("hallo group id bundle", "" + groupID);
+
 
         GroupDetailsFragment groupDetailsFragment = new GroupDetailsFragment();
         groupDetailsFragment.setArguments(bundle);
