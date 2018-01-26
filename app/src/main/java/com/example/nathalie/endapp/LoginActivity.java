@@ -225,8 +225,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         return false;
     }
 
+    // Re-direct to main activity and remove from backstack
     public void goToMain (){
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Log.d("hallo null??", "");
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
     }
 }

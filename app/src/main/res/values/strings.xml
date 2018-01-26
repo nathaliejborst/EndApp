@@ -1,6 +1,14 @@
 <resources>
     <string name="app_name">CORVEE</string>
+    <string-array name="spinnerItems">
+    <item>monthly</item>
+    <item>weekly</item>
+    <item>daily</item>
+    <item>every 2 days</item>
+    <item>every 3 days</item>
+    <item>every 4 days</item>
+    <item>every 5 days</item>
+    <item>every 6 days</item>
+</string-array>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

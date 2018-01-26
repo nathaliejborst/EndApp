@@ -60,7 +60,7 @@ public class GroupnameFragment extends Fragment {
                     transaction.replace(R.id.frame, findUsersFragment);
 
                     // Commit the transaction
-                    transaction.commit();
+                    transaction.addToBackStack(null).commit();
                 }
             }
         });

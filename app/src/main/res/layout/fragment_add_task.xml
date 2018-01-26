@@ -1,0 +1,55 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/taskfrag"
+    android:orientation="vertical"
+    tools:context="com.example.nathalie.endapp.AddTaskFragment">
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/caldroid_black"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose startdate and frequency" />
+
+    <TextView
+        android:id="@+id/month_datepicker_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:textColor="@color/colorPrimary"
+        android:gravity="center"
+        android:text="TextView" />
+
+    <com.github.sundeepk.compactcalendarview.CompactCalendarView
+        android:id="@+id/compactcalendar_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:paddingTop="10dp"
+        app:compactCalendarTextSize="9dp"
+        app:compactCalendarBackgroundColor="@color/mainOrange"
+        app:compactCalendarTextColor="@color/white"
+        app:compactCalendarCurrentDayBackgroundColor="@color/darkOrange"
+        app:compactCalendarCurrentSelectedDayBackgroundColor="@color/colorPrimary"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/spinnerItems"/>
+
+    <Button
+        android:id="@+id/OK_button"
+        android:background="@color/caldroid_transparent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="OK" />
+
+</LinearLayout>

@@ -5,7 +5,7 @@ android {
     defaultConfig {
         multiDexEnabled true
         applicationId "com.example.nathalie.endapp"
-        minSdkVersion 22
+        minSdkVersion 24
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"

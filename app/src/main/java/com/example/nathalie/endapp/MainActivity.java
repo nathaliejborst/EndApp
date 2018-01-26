@@ -6,6 +6,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.DialogFragment;
 import android.app.DatePickerDialog;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -71,8 +72,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
         bottomNavigation();
 
-
-
     }
 
     public void bottomNavigation () {
@@ -82,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.groups_item2:
-
                                 onGroupsItemClicked();
                                 break;
                             case R.id.calendar_item2:
@@ -108,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
         ShowGroupsFragment showGroupsFragment = new ShowGroupsFragment();
         getSupportFragmentManager().beginTransaction().
-                replace(R.id.frame, showGroupsFragment).commit();
+                replace(R.id.frame, showGroupsFragment).addToBackStack(null).commit();
     }
 
     public void onCalendarItemClicked () {
@@ -122,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
         CalendarFragment calendarFragment = new CalendarFragment();
         getSupportFragmentManager().beginTransaction().
-                replace(R.id.frame, calendarFragment).commit();
+                replace(R.id.frame, calendarFragment).addToBackStack(null).commit();
     }
 
     @Override
@@ -138,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     public void onProfileItemClicked () {
         ProfileFragment profileFragment = new ProfileFragment();
         getSupportFragmentManager().beginTransaction().
-                replace(R.id.frame, profileFragment).commit();
+                replace(R.id.frame, profileFragment).addToBackStack(null).commit();
 
     }
 
@@ -179,11 +177,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             getSupportFragmentManager().beginTransaction().
                     replace(R.id.frame, groupnameFragment).commit();
         }
-    }
-
-    // Prevents user to go back to login activity
-    @Override
-    public void onBackPressed() {
     }
 
 }

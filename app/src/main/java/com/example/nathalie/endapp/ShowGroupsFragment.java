@@ -152,7 +152,7 @@ public class ShowGroupsFragment extends Fragment {
         transaction.replace(R.id.frame, groupDetailsFragment);
 
         // Commit the transaction
-        transaction.commit();
+        transaction.addToBackStack(null).commit();
     }
 
     public void itemClicked (View v) {

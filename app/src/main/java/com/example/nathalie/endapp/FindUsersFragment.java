@@ -216,12 +216,12 @@ public class FindUsersFragment extends Fragment {
                 Log.d("hallo listview name?:", "" + String.valueOf(listViewID));
 
                 // Left listview
-                if (listViewID == 2131230904) {
+                if (listViewID == 2131296444) {
                     // Show clicked user in listview on right side of screen
                     addUserToGroup(i);
                 }
                 // Right listview
-                if (listViewID == 2131230989) {
+                if (listViewID == 2131296528) {
                     Log.d("hallo listview:", "" + listViewID);
                     // Remove selected user from users to add list
                     addUsersList.remove(i);
@@ -248,4 +248,5 @@ public class FindUsersFragment extends Fragment {
         // Commit the transaction
         transaction.commit();
     }
+
 }
