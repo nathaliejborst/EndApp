@@ -3,10 +3,12 @@ package com.example.nathalie.endapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,18 +41,11 @@ public class GroupnameFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-
-
                 // Make sure fills in a group name
-                if (enteredGroupName.getText().toString().equals("")) {
-                    hideKeyboard(getContext(), v);
-                    Toast.makeText(getActivity(), "Please fill in a group name", Toast.LENGTH_SHORT).show();
-                } else {
-
+                if (checkNameRequirements(enteredGroupName.getText().toString())) {
                     // Create bundle to transfer groupname to next fragment
                     Bundle bundle = new Bundle();
                     bundle.putString("Group name", enteredGroupName.getText().toString());
-
 
                     FindUsersFragment findUsersFragment = new FindUsersFragment();
                     findUsersFragment.setArguments(bundle);
@@ -67,9 +62,35 @@ public class GroupnameFragment extends Fragment {
         return view;
     }
 
+    public boolean checkNameRequirements (String name) {
+        // Make sure user does not enter characters Firebase can't handle
+        if(name.contains(".") || name.contains("#") || name.contains("$") || name.contains("[") || name.contains("]")) {
+            showAlert("Groupname can't contain '.', '#', '$', '[', or ']'");
+            return false;
+        }
+        // Checks does not enter a blank group name
+        if (name.equals("") || name == null || name.matches("")) {
+            showAlert("Please fill in a group name");
+            return false;
+        }
+        return true;
+    }
+
     // Hides keyboard from screen
     public void hideKeyboard(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public void showAlert (String alert) {
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+        alertDialog.setTitle(alert);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 }

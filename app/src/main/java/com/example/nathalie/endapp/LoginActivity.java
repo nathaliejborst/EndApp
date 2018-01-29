@@ -1,13 +1,18 @@
 package com.example.nathalie.endapp;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -234,5 +239,31 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             finish();
         }
 
+    }
+
+    public boolean checkNameRequirements (String name) {
+        // Make sure user does not enter characters Firebase can't handle
+        if(name.contains(".") || name.contains("#") || name.contains("$") || name.contains("[") || name.contains("]")) {
+            showAlert("Username can't contain '.', '#', '$', '[', or ']'");
+            return false;
+        }
+        // Checks does not enter a blank group name
+        if (name.equals("") || name == null || name.matches("")) {
+            showAlert("Please fill in a username");
+            return false;
+        }
+        return true;
+    }
+
+    public void showAlert (String alert) {
+        AlertDialog alertDialog = new AlertDialog.Builder(LoginActivity.this).create();
+        alertDialog.setTitle(alert);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 }

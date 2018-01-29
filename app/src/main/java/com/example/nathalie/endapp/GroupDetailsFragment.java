@@ -26,6 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,7 +47,7 @@ public class GroupDetailsFragment extends Fragment {
     private DatePickerDialog.OnDateSetListener mDateSetListener;
 
     TextView groupNameTV, addTaskTV, taskLine;
-    String groupName, groupID;
+    String groupName, groupID, taskName;
     ListView membersLV, tasksLV;
     Button addTask, addMember, submitTask;
     EditText addTaskET;
@@ -74,7 +75,6 @@ public class GroupDetailsFragment extends Fragment {
         U.setCurrentuser();
 
 
-
         // Get views from XML
         groupNameTV = (TextView) view.findViewById(R.id.group_name_tv);
         addTaskTV = (TextView) view.findViewById(R.id.tasks_tv);
@@ -92,17 +92,12 @@ public class GroupDetailsFragment extends Fragment {
         groupID  = getArguments().getString("GroupID");
         Log.d("halloooo groupID", groupID);
 
-
-
-
-
-        tasksList.add("Dit is een taak");
-        tasksList.add("Dit ook");
-
-        fillSimpleListView(tasksList, tasksLV);
+        // Get tasks from database and show in listview
+        getTasksFromDatabase();
 
         accesDB();
 
+        // Show groupname in title
         groupNameTV.setText(groupName);
 
         addTask.setOnClickListener(new View.OnClickListener() {
@@ -121,26 +116,40 @@ public class GroupDetailsFragment extends Fragment {
         pickDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (addTask.getText().toString().equals("")) {
-                    showAlert("Please fill in a taskname first");
-                } else {
-                    pickStartDate();
+                // Get taskname from view
+                taskName = addTaskET.getText().toString();
+
+                // Check if group already has a task with the same name
+                if (checkTaskDuplicate()) {
+                    showAlert("This task already exists");
+                    return;
                 }
+                // Check if user filled in a taskname
+                if (addTaskET.getText().toString().matches("")) {
+                    showAlert("Please fill in a taskname first");
+                    return;
+                }
+                    // Open datepicker dialog to add task
+                    pickStartDate();
+
+                    // Change visibilities of views back to before adding the task and delete entry
+                    addTaskET.setText("");
+                    addTaskET.setVisibility(View.INVISIBLE);
+                    pickDate.setVisibility(View.INVISIBLE);
+
+                    addTaskTV.setVisibility(View.VISIBLE);
+                    addTask.setVisibility(View.VISIBLE);
+                    taskLine.setVisibility(View.VISIBLE);
+
             }
         });
 
         addMember.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                T = new Task();
-                Log.d("hallo taak?", "date: " + T.startdate + " chosen freq: " + T.frequency);
 
             }
         });
-
-
-
-
         return view;
     }
 
@@ -164,54 +173,21 @@ public class GroupDetailsFragment extends Fragment {
                 });
     }
 
-    public void addTask () {
-
-//            // Add group child to Firebase
-//            mDatabase.child("groups").child(groupID).child("tasks").setValue(groupName);
-//
-//            // Add group to currently logged in user
-//            mDatabase.child("users").child(U.currentUserID).child("personal groups").child(groupID).child("groupname").setValue(groupName);
-//            mDatabase.child("groups").child(groupID).child("users").child(currentUserID).setValue(U.currentUsername);
-//
-//            // Add group to every user in Firebase
-//            for (int i = 0; i < addUserDetailsList.size(); i++) {
-//                Log.d("hallo _ user: ", "" + addUserDetailsList.get(i).id);
-//                mDatabase.child("users").child(addUserDetailsList.get(i).id).child("personal groups").child(groupID).child("groupname").setValue(groupName);
-//                mDatabase.child("groups").child(groupID).child("users").child(addUserDetailsList.get(i).id).setValue(addUserDetailsList.get(i).username);
-//            }
-    }
-
     public void pickStartDate () {
 
+        // Create bundle to transfer group- and taskname to next fragment
+        Bundle bundle = new Bundle();
+        bundle.putString("GroupID", groupID);
+        bundle.putString("taskname", taskName);
+        bundle.putString("groupname", groupName);
+
+        // Open fragment to choose startdate en frequency
         AddTaskFragment dialogFragment = new AddTaskFragment ();
+        dialogFragment.setArguments(bundle);
         dialogFragment.show(getActivity().getFragmentManager(),"Simple Dialog");
-
-
-//
-//        Calendar c = Calendar.getInstance();
-//        int day = c.get(Calendar.DAY_OF_MONTH);
-//        int month = c.get(Calendar.MONTH);
-//        int year = c.get(Calendar.YEAR);
-//
-//        DatePickerDialog datePicker = new DatePickerDialog(getContext(),
-//                android.R.style.Theme_DeviceDefault_Dialog,
-//                mDateSetListener,year,month,day);
-//        datePicker.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//        datePicker.show();
-//
-//        pickDate.setVisibility(View.INVISIBLE);
-//        submitTask.setVisibility(View.VISIBLE);
-//
-//
-//        mDateSetListener = new DatePickerDialog.OnDateSetListener() {
-//            @Override
-//            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-//                Log.d("hallo datum", "" + year + ", " + month + ", " + dayOfMonth);
-//            }
-//        };
     }
 
-    public void fillSimpleListView (final ArrayList list, ListView lv) {
+    public void fillSimpleListView (final ArrayList list, final ListView lv) {
         ListAdapter theAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
 
         // Set the adapter
@@ -219,6 +195,7 @@ public class GroupDetailsFragment extends Fragment {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
+                lv.invalidateViews();
 
             }
         });
@@ -234,6 +211,37 @@ public class GroupDetailsFragment extends Fragment {
                     }
                 });
         alertDialog.show();
+    }
+
+    public void getTasksFromDatabase () {
+        mDatabase.child("groups").child(groupID).child("tasks")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.d("hallo task count", String.valueOf(dataSnapshot.getChildrenCount()));
+                        tasksList.clear();
+                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                            Log.d("hallo task?", String.valueOf(childDataSnapshot.getKey()));
+                            tasksList.add(String.valueOf(childDataSnapshot.getKey()));
+                        }
+                        fillSimpleListView(tasksList, tasksLV);
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
+                    }
+                });
+
+    }
+
+    public boolean checkTaskDuplicate () {
+        for (int i = 0; i < tasksList.size(); i++) {
+            if (taskName.equalsIgnoreCase(tasksList.get(0))) {
+                Log.d("hallo taskduplicate", "lijst: " + tasksList.get(0) + "   taskname: " + taskName);
+                return true;
+            }
+        }
+        return false;
     }
 
 

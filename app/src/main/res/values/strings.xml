@@ -1,14 +1,9 @@
 <resources>
     <string name="app_name">CORVEE</string>
     <string-array name="spinnerItems">
-    <item>monthly</item>
-    <item>weekly</item>
-    <item>daily</item>
-    <item>every 2 days</item>
-    <item>every 3 days</item>
-    <item>every 4 days</item>
-    <item>every 5 days</item>
-    <item>every 6 days</item>
+        <item>daily</item>
+        <item>weekly</item>
+        <item>monthly</item>
 </string-array>
 
 </resources>

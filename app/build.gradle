@@ -5,7 +5,7 @@ android {
     defaultConfig {
         multiDexEnabled true
         applicationId "com.example.nathalie.endapp"
-        minSdkVersion 24
+        minSdkVersion 23
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -42,18 +42,6 @@ dependencies {
     compile 'com.roomorama:caldroid:3.0.1'
     implementation 'com.android.support:design:26.1.0'
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 apply plugin: 'com.google.gms.google-services'

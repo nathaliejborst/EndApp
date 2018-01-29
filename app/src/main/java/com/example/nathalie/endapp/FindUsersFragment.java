@@ -160,6 +160,14 @@ public class FindUsersFragment extends Fragment {
     }
 
     public void addUserToGroup (int positionClicked) {
+        // Check if user is already added
+        for (int i = 0; i < addUsersList.size(); i++) {
+            if (addUsersList.get(i).equals(resultDetailsList.get(positionClicked).username)) {
+                showAlert("You already added this user");
+                return;
+            }
+        }
+
         // Add username to list to show in the listview
         addUsersList.add(resultDetailsList.get(positionClicked).username);
         // Add user details in list in order to add right user to Firebase
@@ -207,26 +215,31 @@ public class FindUsersFragment extends Fragment {
                 switch(lv.getId()){
                     case R.id.results_lv:
                         Log.d("hallo results:", "" + listViewID);
+                        // Add user to group on click
+                        addUserToGroup(i);
                         break;
                     case R.id.users_to_add_lv:
                         Log.d("hallo users To add:", "" + listViewID);
+                        // Remove selected user from users to add list
+                        addUsersList.remove(i);
+                        usersToAddList.invalidateViews();
                         break;
                 }
 
-                Log.d("hallo listview name?:", "" + String.valueOf(listViewID));
-
-                // Left listview
-                if (listViewID == 2131296444) {
-                    // Show clicked user in listview on right side of screen
-                    addUserToGroup(i);
-                }
-                // Right listview
-                if (listViewID == 2131296528) {
-                    Log.d("hallo listview:", "" + listViewID);
-                    // Remove selected user from users to add list
-                    addUsersList.remove(i);
-                    usersToAddList.invalidateViews();
-                }
+//                Log.d("hallo listview name?:", "" + String.valueOf(listViewID));
+//
+//                // Left listview
+//                if (listViewID == 2131296445) {
+//                    // Show clicked user in listview on right side of screen
+//                    addUserToGroup(i);
+//                }
+//                // Right listview
+//                if (listViewID == 2131296528) {
+//                    Log.d("hallo listview:", "" + listViewID);
+//                    // Remove selected user from users to add list
+//                    addUsersList.remove(i);
+//                    usersToAddList.invalidateViews();
+//                }
             }
         });
     }
@@ -247,6 +260,18 @@ public class FindUsersFragment extends Fragment {
 
         // Commit the transaction
         transaction.commit();
+    }
+
+    public void showAlert (String alert) {
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+        alertDialog.setTitle(alert);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
 }
