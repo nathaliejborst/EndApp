@@ -178,13 +178,11 @@ public class AddTaskFragment extends DialogFragment {
         freq = frequencyS.getSelectedItemPosition();
 
         // Get groupmembers from Firebase
-        mDatabase.child("groups").child(groupID)
+        mDatabase.child("groups").child(groupID).child("users")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        groupColor = String.valueOf(dataSnapshot.child("color").getValue());
-                        Log.d("hallo group COLOR?", String.valueOf(dataSnapshot.child("color").getValue()));
-                        for (DataSnapshot childDataSnapshot : dataSnapshot.child("users").getChildren()) {
+                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
 
                             // Add groupmembers to list
                             memberIDList.add(String.valueOf(childDataSnapshot.getKey()));
@@ -212,7 +210,6 @@ public class AddTaskFragment extends DialogFragment {
         T.groupid = groupID;
         T.schedule = memberIDList;
         T.groupname = groupName;
-        T.groupcolor = groupColor;
 
         // Add task to group and user in Firebase
         mDatabase.child("groups").child(groupID).child("tasks").child(T.taskname).setValue(T);
