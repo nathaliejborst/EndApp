@@ -101,7 +101,7 @@ public class ShowGroupsFragment extends Fragment {
 
     public void getUsersGroups () {
         // Lookup in Firebase current user
-        mDatabase.child("users").child(U.currentUserID).child("personal groups")
+        mDatabase.child("users").child(U.id).child("personal groups")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {

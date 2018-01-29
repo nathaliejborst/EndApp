@@ -32,15 +32,13 @@ public class User {
     }
 
     public void setCurrentuser () {
-        Log.d("hallo user class", " " + FirebaseAuth.getInstance().getCurrentUser().getUid());
-        currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        id = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         FirebaseDatabase.getInstance().getReference().child("users")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.d("hallo user class", " " + dataSnapshot.child(currentUserID).child("username").getValue());
-                        currentUsername = String.valueOf(dataSnapshot.child(currentUserID).child("username").getValue());
+                        username = String.valueOf(dataSnapshot.child(id).child("username").getValue());
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {

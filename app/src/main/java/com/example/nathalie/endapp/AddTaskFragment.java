@@ -53,7 +53,7 @@ public class AddTaskFragment extends DialogFragment {
     Spinner frequencyS;
     LinearLayout taskFrag;
     Button confirmDate;
-    String yearClicked, monthClicked, dayClicked, selectedDate, groupID, taskName, epochString, groupName;
+    String dayClicked, monthClicked, yearClicked, groupID, taskName, epochString, groupName, groupColor;
     int freq;
 
     private ArrayList<String> memberIDList = new ArrayList<String>();
@@ -67,7 +67,7 @@ public class AddTaskFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_add_task, container, false);
-        getDialog().setTitle("Simple Dialog");
+//        getDialog().setTitle("Simple Dialog");
 
         // Get group ID from previous fragment
         groupID  = getArguments().getString("GroupID");
@@ -94,6 +94,9 @@ public class AddTaskFragment extends DialogFragment {
         currentMonth.setText(new SimpleDateFormat("MMM").format(cal.getTime()));
         currentMonth.append(" " + new SimpleDateFormat("yyyy").format(cal.getTime()));
 
+        // Set date clicked to null
+        dayClicked = monthClicked = yearClicked = null;
+
         // Initialze task instance
         T = new Task();
 
@@ -101,10 +104,15 @@ public class AddTaskFragment extends DialogFragment {
         confirmDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                clickedDateToLong();
+                // Check is user selected a start date
+                if (dayClicked == null || monthClicked == null || yearClicked == null) {
+                    showAlert("Please choose a start date");
+                    return;
+                }
 
                 // Convert selected date to long for compactcalendar format
                 dateToLong();
+
                 addTaskToDatabase();
 
                 // 'Close' fragment
@@ -119,57 +127,47 @@ public class AddTaskFragment extends DialogFragment {
         compactCalendar.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
             public void onDayClick(Date dateClicked) {
+                // Convert selected date to Strings
                 dayClicked = String.valueOf(dateClicked).substring(8, 10);
                 monthClicked = String.valueOf(dateClicked).substring(4, 7);
                 yearClicked = String.valueOf(dateClicked).substring(30, 34);
-
-                Log.d("hallo clicked", "" + dateClicked);
             }
 
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
                 // Change title to visible month
                 String dateSelected = String.valueOf(firstDayOfNewMonth);
-                Log.d("hallo scroll", "" + dateSelected);
                 String month = dateSelected.substring(4, 7);
                 String year = dateSelected.substring(30, 34);
-                Log.d("hallo year", "" + year);
                 currentMonth.setText(month);
                 currentMonth.append(" " + year);
             }
         });
-
         return view;
     }
 
     public void dateToLong () {
-
         // Convert month from string to int
         try {
             Date x = new SimpleDateFormat("MMM").parse(monthClicked);
             Calendar c = Calendar.getInstance();
             c.setTime(x);
             int monthInt = c.get(Calendar.MONTH);
-            String monthNumber;
 
             // Plus 1 because compact calendar handles January as the 0'th month
             if (monthInt < 10) {
-                monthNumber = "0" + String.valueOf(monthInt + 1);
+                monthClicked = "0" + String.valueOf(monthInt + 1);
             } else {
-                monthNumber = String.valueOf(monthInt + 1);
+                monthClicked = String.valueOf(monthInt + 1);
             }
 
-            Log.d("hallo month int?", "" + monthInt);
-
             // Create String from selected date
-            String convertDate = dayClicked + "/" + monthNumber + "/" + yearClicked;
+            String convertDate = dayClicked + "/" + monthClicked + "/" + yearClicked;
+
             // Convert String to epoch miliseconds format
             epoch = new SimpleDateFormat("dd/MM/yyyy").parse(convertDate).getTime();
-
-
-            Log.d("hallo month string?", "" + convertDate);
-            Log.d("hallo month epoch?", "" + epoch);
         } catch (ParseException e) {
+            Log.d("hallo_i", "" + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -179,54 +177,33 @@ public class AddTaskFragment extends DialogFragment {
         frequencyS.getSelectedItem().toString();
         freq = frequencyS.getSelectedItemPosition();
 
-        Log.d("hallo task", "freq: " + T.frequency + " epoch: " + T.startdate + " groupid: " + T.groupid);
-
         // Get groupmembers from Firebase
-        mDatabase.child("groups").child(groupID).child("users")
+        mDatabase.child("groups").child(groupID)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                        groupColor = String.valueOf(dataSnapshot.child("color").getValue());
+                        Log.d("hallo group COLOR?", String.valueOf(dataSnapshot.child("color").getValue()));
+                        for (DataSnapshot childDataSnapshot : dataSnapshot.child("users").getChildren()) {
+
                             // Add groupmembers to list
                             memberIDList.add(String.valueOf(childDataSnapshot.getKey()));
+                            User member = childDataSnapshot.getValue(User.class);
                         }
+
                         createTask();
-                        createSchedule();
+//                        createSchedule();
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                         Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
                     }
                 });
-
-
-
-
-
-
-    }
-
-    public void createSchedule () {
-
-        Date epochDate = new Date( epoch );
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(epochDate);
-        calendar.add(Calendar.MONTH, +1);
-        Date result = calendar.getTime();
-        Log.d("hallo result?", "" + result);
-
     }
 
     public void createTask () {
-
-        Log.d("hallo unshuf", "" + String.valueOf(memberIDList));
-
-
-
         // classify members randomly in schedule
         Collections.shuffle(memberIDList);
-
-        Log.d("hallo shuf????", "" + String.valueOf(memberIDList));
 
         // Create task
         T.taskname = taskName;
@@ -235,19 +212,26 @@ public class AddTaskFragment extends DialogFragment {
         T.groupid = groupID;
         T.schedule = memberIDList;
         T.groupname = groupName;
-
-        Log.d("hallo T", "" + String.valueOf(T.startdate) + "   name: " + String.valueOf(taskName));
-
+        T.groupcolor = groupColor;
 
         // Add task to group and user in Firebase
         mDatabase.child("groups").child(groupID).child("tasks").child(T.taskname).setValue(T);
-        mDatabase.child("users").child(U.currentUserID).child("personal groups").child(groupID).child("tasks").child(T.taskname).setValue(T);
+//        mDatabase.child("users").child(U.id).child("personal groups").child(groupID).child("tasks").child(T.taskname).setValue(T);
 
+        for (int i = 0; i < memberIDList.size(); i++) {
+            mDatabase.child("users").child(memberIDList.get(i)).child("personal groups").child(groupID).child("tasks").child(T.taskname).setValue(T);
+        }
     }
 
-
-
-
-
-
+    public void showAlert (String alert) {
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+        alertDialog.setTitle(alert);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
+    }
 }

@@ -4,7 +4,9 @@ package com.example.nathalie.endapp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -26,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,18 +44,18 @@ import java.util.ListIterator;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FindUsersFragment extends Fragment {
+public class FindUsersFragment extends Fragment implements View.OnClickListener {
     private DatabaseReference mDatabase;
-    private FirebaseAuth mAuth;
 
-    TextView receivedGroupName, showUsersToAdd;
+    TextView receivedGroupName, showUsersToAdd, line;
     EditText searchUser;
     ListView resultsList, usersToAddList;
     Button findUsers, createGroup;
 
     User U;
 
-    private String groupName, groupID, currentUserID, currentUsername;
+    private String groupName, groupID;
+    private String groupColor = "red";
     private ArrayList<String> resultUsersList= new ArrayList<String>();
     private ArrayList<User> resultDetailsList= new ArrayList<User>();
 
@@ -66,24 +69,36 @@ public class FindUsersFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_find_users, container, false);
 
         // Initialize Firebase
-        mAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        // get e-mail of current user from Firebase
+        FirebaseAuth.getInstance().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                if (firebaseUser != null) {
+                    U.email =  firebaseUser.getEmail();
+                }
+            }
+        });
 
-
-        // Get groupname, userID and username from previous fragment
+        // Get groupname and -color from previous fragment
         groupName  = getArguments().getString("Group name");
-//        currentUserID = getArguments().getString("userID");
-//        currentUsername = getArguments().getString("username");
+        groupColor = getArguments().getString("Group color");
+
+        Log.d("hallo color", "" + groupColor);
 
         // Initialize user details of current user;
         U = new User();
         U.setCurrentuser();
 
+
         // Get views from XML for left frame
         receivedGroupName = (TextView) view.findViewById(R.id.received_group_name_tv);
+        line = (TextView) view.findViewById(R.id.line_tv);
         searchUser = (EditText) view.findViewById(R.id.input_find_by_email);
         findUsers = (Button) view.findViewById(R.id.find_button);
         resultsList = (ListView) view.findViewById(R.id.results_lv);
+
 
         // Get views from XML for right frame
         showUsersToAdd = (TextView) view.findViewById(R.id.users_to_add_tv);
@@ -144,13 +159,19 @@ public class FindUsersFragment extends Fragment {
                             User aUser = childDataSnapshot.getValue(User.class);
                             aUser.id = childDataSnapshot.getKey();
 
-                            // Add usernames to list to show in results
-                            resultUsersList.add(aUser.username);
-                            // Save user details in list in order to not request the database multiple times
-                            resultDetailsList.add(aUser);
+                            // Show results but exclude logged in user from list
+                            if (!aUser.id.equals(U.id)) {
+                                // Add usernames to list to show in results
+                                resultUsersList.add(aUser.username);
+                                // Save user details in list in order to not request the database multiple times
+                                resultDetailsList.add(aUser);
+                            }
+
+
                         }
                         // Show found users in listview
-                        fillSimpleListView(resultUsersList, resultsList);
+//                        fillSimpleListView(resultUsersList, resultsList);
+                        fillUsersListview();
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
@@ -180,16 +201,17 @@ public class FindUsersFragment extends Fragment {
     public void createGroup () {
         // Add group child to Firebase
         mDatabase.child("groups").child(groupID).child("groupname").setValue(groupName);
+        mDatabase.child("groups").child(groupID).child("color").setValue(groupColor);
 
         // Add group to currently logged in user
-        mDatabase.child("users").child(U.currentUserID).child("personal groups").child(groupID).child("groupname").setValue(groupName);
-        mDatabase.child("groups").child(groupID).child("users").child(currentUserID).setValue(U.currentUsername);
+        mDatabase.child("users").child(U.id).child("personal groups").child(groupID).child("groupname").setValue(groupName);
+        mDatabase.child("groups").child(groupID).child("users").child(U.id).setValue(U);
 
         // Add group to every user in Firebase
         for (int i = 0; i < addUserDetailsList.size(); i++) {
             Log.d("hallo _ user: ", "" + addUserDetailsList.get(i).id);
             mDatabase.child("users").child(addUserDetailsList.get(i).id).child("personal groups").child(groupID).child("groupname").setValue(groupName);
-            mDatabase.child("groups").child(groupID).child("users").child(addUserDetailsList.get(i).id).setValue(addUserDetailsList.get(i).username);
+            mDatabase.child("groups").child(groupID).child("users").child(addUserDetailsList.get(i).id).setValue(addUserDetailsList.get(i));
         }
     }
 
@@ -205,13 +227,6 @@ public class FindUsersFragment extends Fragment {
                 // Make sure on click handles the right listview
                 int listViewID = lv.getId();
 
-                ////////////////////////
-                currentUserID = U.currentUserID;
-                currentUsername = U.currentUsername;
-                Log.d("hallo FU id", "" + U.currentUserID);
-                Log.d("hallo FU name", "" + U.currentUsername);
-                //////////////////////////
-
                 switch(lv.getId()){
                     case R.id.results_lv:
                         Log.d("hallo results:", "" + listViewID);
@@ -225,23 +240,27 @@ public class FindUsersFragment extends Fragment {
                         usersToAddList.invalidateViews();
                         break;
                 }
-
-//                Log.d("hallo listview name?:", "" + String.valueOf(listViewID));
-//
-//                // Left listview
-//                if (listViewID == 2131296445) {
-//                    // Show clicked user in listview on right side of screen
-//                    addUserToGroup(i);
-//                }
-//                // Right listview
-//                if (listViewID == 2131296528) {
-//                    Log.d("hallo listview:", "" + listViewID);
-//                    // Remove selected user from users to add list
-//                    addUsersList.remove(i);
-//                    usersToAddList.invalidateViews();
-//                }
             }
         });
+    }
+
+    public void fillUsersListview () {
+        // Set adapter for listview
+        GroupMembersAdapter cAdapter= new GroupMembersAdapter(getContext(), resultDetailsList);
+        resultsList.setAdapter(cAdapter);
+
+        resultsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                addUserToGroup(i);
+
+                // Change color of button and line when one user is added to list
+                line.setTextColor(Color.parseColor("#66B2FF"));
+                createGroup.setTextColor(Color.parseColor("#66B2FF"));
+
+            }
+        });
+
     }
 
     // Hides keyboard from screen
@@ -274,4 +293,13 @@ public class FindUsersFragment extends Fragment {
         alertDialog.show();
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.find_button:
+                break;
+            case R.id.create_group_button:
+                break;
+        }
+    }
 }

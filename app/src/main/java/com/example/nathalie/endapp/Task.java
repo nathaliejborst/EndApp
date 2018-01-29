@@ -20,6 +20,7 @@ public class Task {
     public String groupid;
     public String groupname;
     public int frequency;
+    public String groupcolor;
     public ArrayList<String> schedule;
 
     public Task() {
@@ -29,14 +30,7 @@ public class Task {
         this.startdate = startdate;
         this.frequency = frequency;
         this.schedule = schedule;
+        this.groupcolor = groupcolor;
     }
-
-    public void createSchedule () {
-
-
-
-
-    }
-
 
 }

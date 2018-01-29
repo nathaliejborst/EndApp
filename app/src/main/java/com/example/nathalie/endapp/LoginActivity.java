@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -51,6 +53,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+
         // Initialize Firebase instance
         mAuth = FirebaseAuth.getInstance();
 
@@ -60,9 +63,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             // start app
         }
 
-        // Hide bottom navigation bar
-//        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-
+        // Initialize progressdialog
         mProgress = new ProgressDialog(this);
 
         // Initialize views from XML
@@ -81,6 +82,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         email = email_input.getText().toString().trim();
         password = password_input.getText().toString().trim();
 
+        // Set on click listeners
         back_login_button.setOnClickListener(this);
         login_button.setOnClickListener(this);
         register_button.setOnClickListener(this);
@@ -111,6 +113,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void loginUser () {
         if (!checkIfEmpty()) {
 
+            // Make sure user cannot use app when no internet connection is active
+            if(!checkInternetConnection()) {
+                showAlert("Please connect to the internet to use CORVEE");
+                return;
+            }
+
             mProgress.setMessage("Logging in ...");
             mProgress.show();
 
@@ -139,10 +147,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
     public void registerUser() {
-        if (!checkIfEmpty()) {
+        if (checkNameRequirements(name_input.getText().toString())) {
+
+            // Get e-mail and password from user
+            getEmail = email_input.getText().toString().trim();
+            getPassword = password_input.getText().toString().trim();
+
+            // Make sure user cannot use app when no internet connection is active
+            if(!checkInternetConnection()) {
+                showAlert("Please connect to the internet to use CORVEE");
+                return;
+            }
 
             mProgress.setMessage("Registering ...");
             mProgress.show();
+
 
             // Sign user in
             mAuth.createUserWithEmailAndPassword(getEmail, getPassword)
@@ -163,14 +182,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                             } else {
                                 FirebaseAuthException e = (FirebaseAuthException )task.getException();
-                                Toast.makeText(LoginActivity.this, "Failed registering", Toast.LENGTH_SHORT).show();
+                                Log.w("hallo_i", "onCancelled: " + e.getMessage());
+                                Toast.makeText(LoginActivity.this, "Failed registering: " + e.getMessage(), Toast.LENGTH_LONG).show();
                                 return;
                             }
                         }
                     });
 
-        } else {        // display a progress dialog if email and password are not empty
-            Toast.makeText(LoginActivity.this, "Failed registering", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(LoginActivity.this, "Please enter valid username", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -230,7 +250,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         return false;
     }
 
-    // Re-direct to main activity and remove from backstack
+    // Re-direct to main activity
     public void goToMain (){
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             Log.d("hallo null??", "");
@@ -241,7 +261,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
+    // Returns true if phone is connected to the internet
+    public boolean checkInternetConnection (){
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            return true;
+        }
+        return false;
+    }
+
+    // Checks if user fills in a username and does not user invalid characters
     public boolean checkNameRequirements (String name) {
+        Log.d("hallo x", "in boolean: " + name);
+
         // Make sure user does not enter characters Firebase can't handle
         if(name.contains(".") || name.contains("#") || name.contains("$") || name.contains("[") || name.contains("]")) {
             showAlert("Username can't contain '.', '#', '$', '[', or ']'");
@@ -265,5 +299,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
                 });
         alertDialog.show();
+    }
+
+    // Make sure user can't acces app by pressing back after logging out
+    @Override
+    public void onBackPressed()
+    {
     }
 }

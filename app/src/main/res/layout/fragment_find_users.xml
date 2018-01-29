@@ -6,13 +6,49 @@
     android:orientation="vertical"
     tools:context="com.example.nathalie.endapp.FindUsersFragment">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/received_group_name_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:text="jjj"
+                android:textColor="@color/mainOrange"
+                android:textSize="18dp" />
+
+            <TextView
+            android:id="@+id/line_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/mainOrange"
+            android:textSize="6dp"
+            android:text="_________________________________________________________________________________________________________________________________________________________" />
+
+            <Button
+            android:id="@+id/create_group_button"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="right"
+            android:text="Create group  "
+            android:background="@color/caldroid_transparent"
+            android:textColor="@color/mainOrange"
+            android:textAlignment="viewEnd"
+            android:textSize="11dp" />
+</LinearLayout>
+
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="480dp"
             android:orientation="horizontal">
 
             <FrameLayout
@@ -26,15 +62,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/received_group_name_tv"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/bb_inActiveBottomBarItemColor"
-                        android:text=""
-                        android:textColor="#ffffff"
-                        android:textSize="18dp" />
 
                     <TextView
                         android:id="@+id/textView2"
@@ -84,9 +111,8 @@
                     <ListView
                         android:id="@+id/results_lv"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:layout_marginTop="20dp" >
-                    </ListView>
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"></ListView>
 
                 </LinearLayout>
             </FrameLayout>
@@ -102,17 +128,6 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
-                    <Button
-                        android:id="@+id/create_group_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="26dp"
-                        android:textSize="11dp"
-                        android:textAlignment="viewEnd"
-                        android:textColor="#ffffff"
-                        android:background="@color/bb_inActiveBottomBarItemColor"
-                        android:layout_gravity="right"
-                        android:text="Create group  " />
-
                     <TextView
                         android:id="@+id/users_to_add_tv"
                         android:layout_width="wrap_content"
@@ -125,7 +140,7 @@
                     <ListView
                         android:id="@+id/users_to_add_lv"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
 

@@ -110,10 +110,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
     }
 
     public void onCalendarItemClicked () {
-
-        DialogFragment datePicker = new CalenderDialog();
-        datePicker.show(getSupportFragmentManager(), "date picker");
-
         // Send user ID to next activity
         Bundle bundle = new Bundle();
         bundle.putString("userID", currentUserID);

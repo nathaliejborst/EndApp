@@ -47,7 +47,7 @@ public class GroupDetailsFragment extends Fragment {
     private DatePickerDialog.OnDateSetListener mDateSetListener;
 
     TextView groupNameTV, addTaskTV, taskLine;
-    String groupName, groupID, taskName;
+    String groupName, groupID, taskName, groupColor;
     ListView membersLV, tasksLV;
     Button addTask, addMember, submitTask;
     EditText addTaskET;
@@ -56,8 +56,10 @@ public class GroupDetailsFragment extends Fragment {
     User U;
     Task T;
 
-    private ArrayList<String> membersList= new ArrayList<String>();
-    private ArrayList<String> tasksList= new ArrayList<String>();
+    private ArrayList<User> mMembersList= new ArrayList<User>();
+    private ArrayList<Task> tasksList= new ArrayList<Task>();
+    private ArrayList<Task> mTasksList= new ArrayList<Task>();
+
 
 
     @Override
@@ -90,7 +92,6 @@ public class GroupDetailsFragment extends Fragment {
         // Get selected group name from previous fragment
         groupName  = getArguments().getString("Group name");
         groupID  = getArguments().getString("GroupID");
-        Log.d("halloooo groupID", groupID);
 
         // Get tasks from database and show in listview
         getTasksFromDatabase();
@@ -103,6 +104,10 @@ public class GroupDetailsFragment extends Fragment {
         addTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Set hint
+                addTaskET.setHint("Enter taskname");
+
+                // Change visibility of views
                 addTaskET.setVisibility(View.VISIBLE);
                 pickDate.setVisibility(View.VISIBLE);
 
@@ -154,17 +159,26 @@ public class GroupDetailsFragment extends Fragment {
     }
 
     public void accesDB () {
-        mDatabase.child("groups").child(groupID).child("users")
+        mDatabase.child("groups").child(groupID)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.d("hallo group usernames1", String.valueOf(dataSnapshot.getChildrenCount()));
-                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                            Log.d("hallo group usernames2", String.valueOf(childDataSnapshot.getValue()));
-                            membersList.add(String.valueOf(childDataSnapshot.getValue()));
+                        // Get group color and name from Firebase
+//                        groupColor = String.valueOf(dataSnapshot.child("color").getValue());
+//                        String.valueOf(dataSnapshot.child("groupname").getValue());
+
+//                        Log.d("hallo group COLOR?", String.valueOf(dataSnapshot.child("color").getValue()));
+                        for (DataSnapshot childDataSnapshot : dataSnapshot.child("users").getChildren()) {
+
+                            // Get group members from Firebase
+                            User member = childDataSnapshot.getValue(User.class);
+                            mMembersList.add(member);
+
+                            Log.d("hallo group usernames2", "" + member.username);
 
                         }
-                        fillSimpleListView(membersList, membersLV);
+                        fillMembersListview();
+//                        fillSimpleListView(membersList, membersLV);
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
@@ -174,10 +188,10 @@ public class GroupDetailsFragment extends Fragment {
     }
 
     public void pickStartDate () {
-
         // Create bundle to transfer group- and taskname to next fragment
         Bundle bundle = new Bundle();
         bundle.putString("GroupID", groupID);
+        bundle.putString("Group color", groupColor);
         bundle.putString("taskname", taskName);
         bundle.putString("groupname", groupName);
 
@@ -187,18 +201,67 @@ public class GroupDetailsFragment extends Fragment {
         dialogFragment.show(getActivity().getFragmentManager(),"Simple Dialog");
     }
 
-    public void fillSimpleListView (final ArrayList list, final ListView lv) {
-        ListAdapter theAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
+    public void getTasksFromDatabase () {
+        mDatabase.child("groups").child(groupID).child("tasks")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        mTasksList.clear();
+                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                            Task T = new Task();
+                            T = childDataSnapshot.getValue(Task.class);
+                            Log.d("hallo class", String.valueOf(T.groupname) + " frequency: " + T.frequency);
 
-        // Set the adapter
-        lv.setAdapter(theAdapter);
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            // Add task to list
+                            mTasksList.add(T);
+                        }
+                        fillTasksListview();
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
+                    }
+                });
+    }
+
+    public void fillTasksListview () {
+        // Set adapter for listview
+        CalendarTaskAdapter cAdapter= new CalendarTaskAdapter(getContext(), mTasksList);
+        tasksLV.setAdapter(cAdapter);
+
+        tasksLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
-                lv.invalidateViews();
-
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String clickedItem = String.valueOf(view.getTag());
+                showAlert(clickedItem);
             }
         });
+
+    }
+
+    public void fillMembersListview () {
+        // Set adapter for listview
+        GroupMembersAdapter cAdapter= new GroupMembersAdapter(getContext(), mMembersList);
+        membersLV.setAdapter(cAdapter);
+
+        membersLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String clickedItem = String.valueOf(view.getTag());
+                showAlert(clickedItem);
+            }
+        });
+
+    }
+
+    // Returns true if entered taskname already exists within group
+    public boolean checkTaskDuplicate () {
+        for (int i = 0; i < mTasksList.size(); i++) {
+            if (taskName.equalsIgnoreCase(mTasksList.get(0).taskname)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void showAlert (String alert) {
@@ -211,37 +274,6 @@ public class GroupDetailsFragment extends Fragment {
                     }
                 });
         alertDialog.show();
-    }
-
-    public void getTasksFromDatabase () {
-        mDatabase.child("groups").child(groupID).child("tasks")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.d("hallo task count", String.valueOf(dataSnapshot.getChildrenCount()));
-                        tasksList.clear();
-                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                            Log.d("hallo task?", String.valueOf(childDataSnapshot.getKey()));
-                            tasksList.add(String.valueOf(childDataSnapshot.getKey()));
-                        }
-                        fillSimpleListView(tasksList, tasksLV);
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
-                    }
-                });
-
-    }
-
-    public boolean checkTaskDuplicate () {
-        for (int i = 0; i < tasksList.size(); i++) {
-            if (taskName.equalsIgnoreCase(tasksList.get(0))) {
-                Log.d("hallo taskduplicate", "lijst: " + tasksList.get(0) + "   taskname: " + taskName);
-                return true;
-            }
-        }
-        return false;
     }
 
 
