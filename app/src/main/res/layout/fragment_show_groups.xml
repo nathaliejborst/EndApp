@@ -49,6 +49,7 @@
 
         <ListView
             android:id="@+id/show_groups_lv"
+            android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>

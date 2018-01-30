@@ -42,6 +42,7 @@ public class ShowGroupsFragment extends Fragment {
     private ArrayList<String> usersGroupsList= new ArrayList<String>();
     private ArrayList<String> usersGroupsIDList= new ArrayList<String>();
     private ArrayList<Group> mGroupsList= new ArrayList<Group>();
+    private boolean showGroups;
     User U;
 
 
@@ -59,6 +60,9 @@ public class ShowGroupsFragment extends Fragment {
         // Initialize Firebase
         mAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        // Don't show groups by default
+        showGroups = false;
 
         // Get views from XML
         newGroupButton = (Button) view.findViewById(R.id.new_group_button);
@@ -226,12 +230,19 @@ public class ShowGroupsFragment extends Fragment {
                 break;
             case R.id.show_groups_button:
                 // Change color of clicked button
-                showGroupsButton.setTextColor(Color.parseColor("#66B2FF"));
-                lineShowGroups.setTextColor(Color.parseColor("#66B2FF"));
+                if(!showGroups) {
+                    showGroupsButton.setTextColor(Color.parseColor("#66B2FF"));
+                    lineShowGroups.setTextColor(Color.parseColor("#66B2FF"));
+                    showUsersGroups.setVisibility(View.VISIBLE);
 
-                // Set other button back to default color
-                newGroupButton.setTextColor(Color.parseColor("#FF6600"));
-                lineAddGroup.setTextColor(Color.parseColor("#FF6600"));
+                    showGroups = true;
+                } else {
+                    showGroupsButton.setTextColor(Color.parseColor("#FF6600"));
+                    lineShowGroups.setTextColor(Color.parseColor("#FF6600"));
+                    showUsersGroups.setVisibility(View.INVISIBLE);
+
+                    showGroups = false;
+                }
                 break;
         }
 

@@ -41,6 +41,7 @@ public class ProfileFragment extends Fragment {
     private ListView tasksList;
     private ArrayList<String> usersGroupsIDList= new ArrayList<String>();
     private ArrayList<Task> mTasksList= new ArrayList<Task>();
+    private boolean taskvisible;
 
 
 
@@ -66,7 +67,11 @@ public class ProfileFragment extends Fragment {
         lineTasks = (TextView) view.findViewById(R.id.tasks_line);
         tasksList = (ListView) view.findViewById(R.id.upcoming_tasks_lv);
 
+        // Set tasks invisible by default
+        taskvisible = false;
+
         getTasks();
+
 
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,8 +85,22 @@ public class ProfileFragment extends Fragment {
         tasksButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            tasksButton.setTextColor(Color.parseColor("#66B2FF"));
-            lineTasks.setTextColor(Color.parseColor("#66B2FF"));
+            // Show/Hide tasks and change buttoncolor on click
+            if(!taskvisible){
+                tasksButton.setTextColor(Color.parseColor("#66B2FF"));
+                lineTasks.setTextColor(Color.parseColor("#66B2FF"));
+                tasksList.setVisibility(View.VISIBLE);
+
+                // Set boolean to true
+                taskvisible = true;
+            } else {
+                tasksButton.setTextColor(Color.parseColor("#FF8000"));
+                lineTasks.setTextColor(Color.parseColor("#FF8000"));
+                tasksList.setVisibility(View.INVISIBLE);
+
+                // Set boolean to false
+                taskvisible = false;
+            }
             }
         });
         return view;

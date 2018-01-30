@@ -57,19 +57,11 @@
             android:text="Tasks"
             android:textColor="#ff9933" />
 
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:layout_marginStart="5dp"
-            android:textColor="@color/caldroid_black"
-            android:text="Tasks:" />
-
         <ListView
             android:id="@+id/upcoming_tasks_lv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="invisible"
             android:layout_marginTop="6dp"/>
     </LinearLayout>
 
