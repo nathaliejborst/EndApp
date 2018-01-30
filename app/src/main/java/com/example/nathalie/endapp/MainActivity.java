@@ -55,10 +55,6 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
             startActivity(intent);
         }
 
-        // Hide bottom navigation bar
-//        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-
-
         // Get instance and referance from Firebase and access corresponding data
         mAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -72,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
         bottomNavigation();
 
+        // Re-direct to user's profile
+        onProfileItemClicked();
     }
 
     public void bottomNavigation () {

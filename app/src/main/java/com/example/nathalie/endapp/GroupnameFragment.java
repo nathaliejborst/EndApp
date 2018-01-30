@@ -59,28 +59,6 @@ public class GroupnameFragment extends Fragment implements View.OnClickListener 
         redTV.setOnClickListener(this);
         addGroup.setOnClickListener(this);
 
-
-//        addGroup.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // Make sure fills in a group name
-//                if (checkNameRequirements(enteredGroupName.getText().toString())) {
-//                    // Create bundle to transfer groupname to next fragment
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString("Group name", enteredGroupName.getText().toString());
-//
-//                    FindUsersFragment findUsersFragment = new FindUsersFragment();
-//                    findUsersFragment.setArguments(bundle);
-//                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
-//
-//                    // Replace fragment
-//                    transaction.replace(R.id.frame, findUsersFragment);
-//
-//                    // Commit the transaction
-//                    transaction.addToBackStack(null).commit();
-//                }
-//            }
-//        });
         return view;
     }
 

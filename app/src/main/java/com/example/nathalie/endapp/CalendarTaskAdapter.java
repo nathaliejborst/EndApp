@@ -57,8 +57,6 @@ public class CalendarTaskAdapter extends BaseAdapter {
         TextView frequency = (TextView)v.findViewById(R.id.frequency_tv);
         TextView startdate = (TextView)v.findViewById(R.id.startdate_tv);
 
-        Log.d("hallo freq size", " " + frequencies.size());
-
         // Convert startdate to string data
         Long l = Long.parseLong(mTasklist.get(i).startdate);
         SimpleDateFormat f = new SimpleDateFormat("dd/MM/yyyy");
@@ -69,7 +67,7 @@ public class CalendarTaskAdapter extends BaseAdapter {
         frequency.setText(frequencies.get(mTasklist.get(i).frequency));
         startdate.setText(startdateString);
 
-        v.setTag(String.valueOf(mTasklist.get(i).startdate));
+        v.setTag(String.valueOf(mTasklist.get(i).groupname));
 
         return v;
     }

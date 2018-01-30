@@ -133,8 +133,8 @@ public class FindUsersFragment extends Fragment implements View.OnClickListener 
                 // Add group to every user's node in Firebase
                 createGroup();
 
-                // Show user's groups
-                showGroups();
+                // Re-direct to just created group
+                showGroupDetails();
 
 
             }
@@ -268,16 +268,33 @@ public class FindUsersFragment extends Fragment implements View.OnClickListener 
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    public void showGroups () {
-        ShowGroupsFragment showGroupsFragment = new ShowGroupsFragment();
+//    public void showGroups () {
+//        ShowGroupsFragment showGroupsFragment = new ShowGroupsFragment();
+//        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+//
+//        // Replace fragment
+//        transaction.replace(R.id.frame, showGroupsFragment);
+//        transaction.addToBackStack(null);
+//
+//        // Commit the transaction
+//        transaction.commit();
+//    }
+
+    public void showGroupDetails () {
+        // Create bundle to transfer groupname to next fragment
+        Bundle bundle = new Bundle();
+        bundle.putString("Group name", groupName);
+        bundle.putString("GroupID", groupID);
+
+        GroupDetailsFragment groupDetailsFragment = new GroupDetailsFragment();
+        groupDetailsFragment.setArguments(bundle);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
         // Replace fragment
-        transaction.replace(R.id.frame, showGroupsFragment);
-        transaction.addToBackStack(null);
+        transaction.replace(R.id.frame, groupDetailsFragment);
 
         // Commit the transaction
-        transaction.commit();
+        transaction.addToBackStack(null).commit();
     }
 
     public void showAlert (String alert) {

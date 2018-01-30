@@ -57,14 +57,20 @@
             android:text="Tasks"
             android:textColor="#ff9933" />
 
-        <Button
-            android:id="@+id/change_name_button"
+        <TextView
+            android:id="@+id/textView8"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/caldroid_transparent"
-            android:text="Change name"
-            android:textColor="#ff9933"
-            android:visibility="invisible"/>
+            android:layout_marginTop="14dp"
+            android:layout_marginStart="5dp"
+            android:textColor="@color/caldroid_black"
+            android:text="Tasks:" />
+
+        <ListView
+            android:id="@+id/upcoming_tasks_lv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"/>
     </LinearLayout>
 
 </FrameLayout>

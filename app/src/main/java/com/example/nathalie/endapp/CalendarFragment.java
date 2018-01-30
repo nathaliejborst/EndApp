@@ -53,6 +53,7 @@ public class CalendarFragment extends Fragment {
     private ArrayList<String> dayEvents = new ArrayList<String>();
     private ArrayList<String> tasksList = new ArrayList<String>();
     private ArrayList<Task> mTasksList = new ArrayList<Task>();
+    private ArrayList<String> usersGroupsIDList= new ArrayList<String>();
 
     User U;
 
@@ -98,7 +99,9 @@ public class CalendarFragment extends Fragment {
                 List<Event> events = compactCalendar.getEvents(dateClicked);
                 for (int i = 0; i < events.size(); i++) {
                     dayEvents.add(String.valueOf(events.get(i).getData()));
+//                    mTasksList.add((Task) events.get(i).getData());
                 }
+                fillTasksListview();
                 fillSimpleListView(dayEvents);
             }
 
@@ -138,7 +141,12 @@ public class CalendarFragment extends Fragment {
         showTasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
-                showTaskDescription("bla bla bla bla bla beschrijving bla bla bla bla");
+                String eventData = showTasks.getItemAtPosition(i).toString();
+
+                String groupName = eventData.substring(eventData.indexOf("(")+1, eventData.indexOf(")"));
+                Log.d("hallo grouname clicked", "" + groupName);
+
+//                showTaskDescription("bla bla bla bla bla beschrijving bla bla bla bla");
             }
         });
     }
@@ -153,15 +161,12 @@ public class CalendarFragment extends Fragment {
 
                         // Get details for every group of user
                         for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                            // Get task data from group
                             for (DataSnapshot taskDataSnapshot : childDataSnapshot.child("tasks").getChildren()) {
                                 // Retreive task from Firebase
                                 Task T = taskDataSnapshot.getValue(Task.class);
                                 long l = Long.parseLong(T.startdate);
 
-
                                 ArrayList<String> schedule = T.schedule;
-
                                 createSchedule(T);
                             }
                         }
@@ -238,13 +243,42 @@ public class CalendarFragment extends Fragment {
     public void addEvent (Calendar c, Task T) {
         Date result = c.getTime();
         Long taskDate = c.getTimeInMillis();
-        String color = checkColor(T);
 
-        // Add task to calendar
-        Event event = new Event(Color.parseColor("#90EE90"), taskDate, T.taskname +"     (" + T.groupname + ")");
+        // Add task to calendar with the the groupcolor as marker color
+        Event event = new Event(Color.rgb(255, 255, 255), taskDate, T.taskname +"     (" + T.groupname + ")");
+        switch(T.groupcolor) {
+            case "magenta":
+                event = new Event(Color.rgb(186, 85, 211), taskDate, T.taskname +"     (" + T.groupname + ")");
+                break;
+            case "cyan":
+                event = new Event(Color.rgb(144, 238, 144), taskDate, T);
+                break;
+            case "yellow":
+                event = new Event(Color.rgb(255, 215, 0), taskDate, T.taskname +"     (" + T.groupname + ")");
+                break;
+            case "blue":
+                event = new Event(Color.rgb(65, 105, 225), taskDate, T.taskname +"     (" + T.groupname + ")");
+                break;
+            case "red":
+                event = new Event(Color.rgb(255, 69, 0), taskDate, T);
+                break;
+        }
         compactCalendar.addEvent(event);
     }
 
+    public void fillTasksListview () {
+        // Set adapter for listview
+        CalendarTaskAdapter cAdapter= new CalendarTaskAdapter(getContext(), mTasksList);
+        showTasks.setAdapter(cAdapter);
+
+        showTasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                // Re-direct to group details on list item click
+
+            }
+        });
+    }
 
     public void showTaskDescription (String alert) {
         AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
@@ -257,68 +291,4 @@ public class CalendarFragment extends Fragment {
                 });
         alertDialog.show();
     }
-
-    public String checkColor (Task T) {
-        String color = "#FFFFFF";
-        switch(T.groupcolor) {
-            case "magenta":
-                color = "#BA55D3";
-                Log.d("hallo magenta", "");
-                break;
-            case "cyan":
-                color = "#90EE90";
-                Log.d("hallo cyan", "");
-                break;
-            case "yellow":
-                color = "#FFD700";
-                Log.d("hallo yellow", "");
-                break;
-            case "blue":
-                color = "#4169E1";
-                Log.d("hallo blue", "");
-                break;
-            case "red":
-                color = "#FF4500";
-                Log.d("hallo red", "");
-                break;
-        }
-        Log.d("hallo TASK COLOR", "" + color + "    from T: " + T.groupcolor + ", " + T.groupname);
-
-
-
-
-//        String color = T.groupcolor;
-//        switch(color) {
-//            case "magenta":
-//                event = new Event(Color.parseColor("#BA55D3"), taskDate, T.taskname +"     (" + T.groupname + ")");
-////                color = "#BA55D3";
-//                Log.d("hallo magenta", "");
-//                break;
-//            case "cyan":
-//                event = new Event(Color.parseColor("#90EE90"), taskDate, T.taskname +"     (" + T.groupname + ")");
-//
-////                color = "#90EE90";
-//                Log.d("hallo cyan", "");
-//                break;
-//            case "yellow":
-//                event = new Event(Color.parseColor("#FFD700"), taskDate, T.taskname +"     (" + T.groupname + ")");
-//
-////                color = "#FFD700";
-//                Log.d("hallo yellow", "");
-//                break;
-//            case "blue":
-//                event = new Event(Color.parseColor("#4169E1"), taskDate, T.taskname +"     (" + T.groupname + ")");
-//
-////                color = "#4169E1";
-//                Log.d("hallo blue", "");
-//                break;
-//            case "red":
-//                event = new Event(Color.parseColor("#FF4500"), taskDate, T.taskname +"     (" + T.groupname + ")");
-//
-//                Log.d("hallo red", "");
-//                break;
-//        }
-        return color;
-    }
-
 }
