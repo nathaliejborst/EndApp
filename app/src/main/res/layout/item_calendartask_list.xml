@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp">
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/task_tv"
+        android:layout_marginStart="13dp"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:textColor="@color/caldroid_black"
+        android:text="Taskname" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/caldroid_black"
+            android:textSize="10dp"
+            android:text="groupname" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/caldroid_black"
+            android:textSize="10dp"
+            android:text="frequency" />
+    </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

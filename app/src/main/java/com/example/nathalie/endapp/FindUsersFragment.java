@@ -257,7 +257,6 @@ public class FindUsersFragment extends Fragment implements View.OnClickListener 
                 // Change color of button and line when one user is added to list
                 line.setTextColor(Color.parseColor("#66B2FF"));
                 createGroup.setTextColor(Color.parseColor("#66B2FF"));
-
             }
         });
 

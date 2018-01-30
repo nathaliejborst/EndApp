@@ -41,6 +41,7 @@ public class ShowGroupsFragment extends Fragment {
     private ListView showUsersGroups;
     private ArrayList<String> usersGroupsList= new ArrayList<String>();
     private ArrayList<String> usersGroupsIDList= new ArrayList<String>();
+    private ArrayList<Group> mGroupsList= new ArrayList<Group>();
     User U;
 
 
@@ -91,8 +92,13 @@ public class ShowGroupsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // Show found users in listview
-                fillSimpleListView(usersGroupsList);
+//                fillSimpleListView(usersGroupsList);
+
+//                getTaskAndMemberCount();
+                fillGroupsListview();
+                showUsersGroups.requestLayout();
                 itemClicked(v);
+
             }
         });
         return view;
@@ -107,12 +113,13 @@ public class ShowGroupsFragment extends Fragment {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         // Get users details for every user in search result
                         for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+
+                            // Add group id's and names to list
                             usersGroupsList.add(String.valueOf(childDataSnapshot.child("groupname").getValue()));
                             usersGroupsIDList.add(String.valueOf(childDataSnapshot.getKey()));
-
-
-
                         }
+
+                        getTaskAndMemberCount();
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
@@ -153,6 +160,57 @@ public class ShowGroupsFragment extends Fragment {
 
         // Commit the transaction
         transaction.addToBackStack(null).commit();
+    }
+
+    public void getTaskAndMemberCount () {
+
+        for (int i = 0; i < usersGroupsIDList.size(); i++) {
+            Log.d("hallo GROUP: ", "" + usersGroupsList.get(i));
+
+            // Clear list because otherwise groups will be shown twice when clicked multiple times
+            mGroupsList.clear();
+
+            // Get task and member count from Firebase
+            mDatabase.child("groups").child(usersGroupsIDList.get(i)).
+                    addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            // Get users details for every user in search result
+                            Group G = new Group();
+                            G = dataSnapshot.getValue(Group.class);
+                            Log.d("hallo class!!! !!! ", "" + G.color);
+
+                            G.tasksAmount = String.valueOf(dataSnapshot.child("tasks").getChildrenCount());
+                            G.usersAmount = String.valueOf(dataSnapshot.child("users").getChildrenCount());
+
+                            mGroupsList.add(G);
+
+                            Log.d("hallo # users?", "" + G.usersAmount);
+                            Log.d("hallo # tasks?", "" + G.tasksAmount);
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
+                        }
+                });
+        }
+    }
+
+    public void fillGroupsListview () {
+        // Set adapter for listview
+        ShowGroupsAdapter cAdapter= new ShowGroupsAdapter(getContext(), mGroupsList);
+        showUsersGroups.setAdapter(cAdapter);
+
+
+        showUsersGroups.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d("hallo groupnaam", "" + mGroupsList.get(i).groupname);
+                Log.d("hallo id", "" + usersGroupsIDList.get(i));
+                showGroupDetails(mGroupsList.get(i).groupname, usersGroupsIDList.get(i));
+            }
+        });
+
     }
 
     public void itemClicked (View v) {

@@ -108,7 +108,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textColor="#FF00FF"
+                    android:textColor="#BA55D3"
                     android:text="●"
                     android:textSize="30dp"/>
                 <TextView
@@ -117,7 +117,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textColor="#00FFFF"
+                    android:textColor="#90EE90"
                     android:text="●"
                     android:textSize="30dp"/>
                 <TextView
@@ -126,7 +126,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textColor="#ffff00"
+                    android:textColor="#FFD700"
                     android:text="●"
                     android:textSize="30dp"/>
                 <TextView
@@ -135,7 +135,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textColor="#0000FF"
+                    android:textColor="#4169E1"
                     android:text="●"
                     android:textSize="30dp"/>
 
@@ -145,7 +145,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textColor="#FF0000"
+                    android:textColor="#FF4500"
                     android:text="●"
                     android:textSize="30dp"/>
         </LinearLayout>

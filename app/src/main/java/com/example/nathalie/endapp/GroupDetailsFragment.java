@@ -98,6 +98,9 @@ public class GroupDetailsFragment extends Fragment {
 
         accesDB();
 
+        tasksLV.invalidateViews();
+        membersLV.invalidateViews();
+
         // Show groupname in title
         groupNameTV.setText(groupName);
 
@@ -234,6 +237,7 @@ public class GroupDetailsFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String clickedItem = String.valueOf(view.getTag());
                 showAlert(clickedItem);
+                tasksLV.invalidateViews();
             }
         });
 
@@ -249,6 +253,7 @@ public class GroupDetailsFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String clickedItem = String.valueOf(view.getTag());
                 showAlert(clickedItem);
+                tasksLV.invalidateViews();
             }
         });
 

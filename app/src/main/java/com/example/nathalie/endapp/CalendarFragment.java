@@ -52,6 +52,7 @@ public class CalendarFragment extends Fragment {
     private Toolbar toolbar;
     private ArrayList<String> dayEvents = new ArrayList<String>();
     private ArrayList<String> tasksList = new ArrayList<String>();
+    private ArrayList<Task> mTasksList = new ArrayList<Task>();
 
     User U;
 
@@ -157,6 +158,8 @@ public class CalendarFragment extends Fragment {
                                 // Retreive task from Firebase
                                 Task T = taskDataSnapshot.getValue(Task.class);
                                 long l = Long.parseLong(T.startdate);
+
+
                                 ArrayList<String> schedule = T.schedule;
 
                                 createSchedule(T);
@@ -235,9 +238,10 @@ public class CalendarFragment extends Fragment {
     public void addEvent (Calendar c, Task T) {
         Date result = c.getTime();
         Long taskDate = c.getTimeInMillis();
+        String color = checkColor(T);
 
         // Add task to calendar
-        Event event = new Event(Color.WHITE, taskDate, T.groupname +":   " + T.taskname);
+        Event event = new Event(Color.parseColor("#90EE90"), taskDate, T.taskname +"     (" + T.groupname + ")");
         compactCalendar.addEvent(event);
     }
 
@@ -252,6 +256,69 @@ public class CalendarFragment extends Fragment {
                     }
                 });
         alertDialog.show();
+    }
+
+    public String checkColor (Task T) {
+        String color = "#FFFFFF";
+        switch(T.groupcolor) {
+            case "magenta":
+                color = "#BA55D3";
+                Log.d("hallo magenta", "");
+                break;
+            case "cyan":
+                color = "#90EE90";
+                Log.d("hallo cyan", "");
+                break;
+            case "yellow":
+                color = "#FFD700";
+                Log.d("hallo yellow", "");
+                break;
+            case "blue":
+                color = "#4169E1";
+                Log.d("hallo blue", "");
+                break;
+            case "red":
+                color = "#FF4500";
+                Log.d("hallo red", "");
+                break;
+        }
+        Log.d("hallo TASK COLOR", "" + color + "    from T: " + T.groupcolor + ", " + T.groupname);
+
+
+
+
+//        String color = T.groupcolor;
+//        switch(color) {
+//            case "magenta":
+//                event = new Event(Color.parseColor("#BA55D3"), taskDate, T.taskname +"     (" + T.groupname + ")");
+////                color = "#BA55D3";
+//                Log.d("hallo magenta", "");
+//                break;
+//            case "cyan":
+//                event = new Event(Color.parseColor("#90EE90"), taskDate, T.taskname +"     (" + T.groupname + ")");
+//
+////                color = "#90EE90";
+//                Log.d("hallo cyan", "");
+//                break;
+//            case "yellow":
+//                event = new Event(Color.parseColor("#FFD700"), taskDate, T.taskname +"     (" + T.groupname + ")");
+//
+////                color = "#FFD700";
+//                Log.d("hallo yellow", "");
+//                break;
+//            case "blue":
+//                event = new Event(Color.parseColor("#4169E1"), taskDate, T.taskname +"     (" + T.groupname + ")");
+//
+////                color = "#4169E1";
+//                Log.d("hallo blue", "");
+//                break;
+//            case "red":
+//                event = new Event(Color.parseColor("#FF4500"), taskDate, T.taskname +"     (" + T.groupname + ")");
+//
+//                Log.d("hallo red", "");
+//                break;
+//        }
+        return color;
     }
 
 }

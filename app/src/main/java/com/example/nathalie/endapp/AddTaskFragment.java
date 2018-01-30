@@ -60,7 +60,7 @@ public class AddTaskFragment extends DialogFragment {
     Task T;
     User U;
 
-    private long epoch;
+    private long epoch = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,12 +90,9 @@ public class AddTaskFragment extends DialogFragment {
 
         // Set title to current month
         Calendar cal = Calendar.getInstance();
-        Date date = new Date();
+        final Date date = new Date();
         currentMonth.setText(new SimpleDateFormat("MMM").format(cal.getTime()));
         currentMonth.append(" " + new SimpleDateFormat("yyyy").format(cal.getTime()));
-
-        // Set date clicked to null
-        dayClicked = monthClicked = yearClicked = null;
 
         // Initialze task instance
         T = new Task();
@@ -105,7 +102,7 @@ public class AddTaskFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 // Check is user selected a start date
-                if (dayClicked == null || monthClicked == null || yearClicked == null) {
+                if (epoch == 0) {
                     showAlert("Please choose a start date");
                     return;
                 }
@@ -128,9 +125,17 @@ public class AddTaskFragment extends DialogFragment {
             @Override
             public void onDayClick(Date dateClicked) {
                 // Convert selected date to Strings
-                dayClicked = String.valueOf(dateClicked).substring(8, 10);
-                monthClicked = String.valueOf(dateClicked).substring(4, 7);
-                yearClicked = String.valueOf(dateClicked).substring(30, 34);
+                Log.d("hallo date", " " + dateClicked.getMonth());
+                Log.d("hallo date", " " + dateClicked.getTime());
+
+                epoch = dateClicked.getTime();
+
+
+//                dateClicked.getMonth()
+
+//                dayClicked = String.valueOf(dateClicked).substring(8, 10);
+                monthClicked = String.valueOf(dateClicked.getMonth());
+//                yearClicked = String.valueOf(dateClicked).substring(30, 34);
             }
 
             @Override
@@ -138,7 +143,8 @@ public class AddTaskFragment extends DialogFragment {
                 // Change title to visible month
                 String dateSelected = String.valueOf(firstDayOfNewMonth);
                 String month = dateSelected.substring(4, 7);
-                String year = dateSelected.substring(30, 34);
+                String year = String.valueOf(firstDayOfNewMonth.getYear());
+                Log.d("hallo scroll year", ""+ firstDayOfNewMonth.getYear() + "");
                 currentMonth.setText(month);
                 currentMonth.append(" " + year);
             }
@@ -161,11 +167,6 @@ public class AddTaskFragment extends DialogFragment {
                 monthClicked = String.valueOf(monthInt + 1);
             }
 
-            // Create String from selected date
-            String convertDate = dayClicked + "/" + monthClicked + "/" + yearClicked;
-
-            // Convert String to epoch miliseconds format
-            epoch = new SimpleDateFormat("dd/MM/yyyy").parse(convertDate).getTime();
         } catch (ParseException e) {
             Log.d("hallo_i", "" + e.getMessage());
             e.printStackTrace();
@@ -177,26 +178,52 @@ public class AddTaskFragment extends DialogFragment {
         frequencyS.getSelectedItem().toString();
         freq = frequencyS.getSelectedItemPosition();
 
-        // Get groupmembers from Firebase
-        mDatabase.child("groups").child(groupID).child("users")
-                .addValueEventListener(new ValueEventListener() {
+        mDatabase.child("groups").child(groupID).
+                addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                        groupColor = String.valueOf(dataSnapshot.child("color").getValue());
+                        memberIDList.clear();
 
-                            // Add groupmembers to list
-                            memberIDList.add(String.valueOf(childDataSnapshot.getKey()));
+                        Log.d("hallo groupcolor??", " " + groupColor);
+
+                        for (DataSnapshot childDataSnapshot : dataSnapshot.child("users").getChildren()) {
+                            Log.d("hallo is dit user id?", "" + childDataSnapshot.getKey());
                             User member = childDataSnapshot.getValue(User.class);
+                            Log.d("HALLO", "username???  " + member.username);
+                            memberIDList.add(member.id);
                         }
-
-                        createTask();
-//                        createSchedule();
+                            createTask();
                     }
+
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                         Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
                     }
                 });
+
+
+
+//        // Get groupmembers from Firebase
+//        mDatabase.child("groups").child(groupID).child("users")
+//                .addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+//
+//                            // Add groupmembers to list
+//                            memberIDList.add(String.valueOf(childDataSnapshot.getKey()));
+//                            User member = childDataSnapshot.getValue(User.class);
+//                        }
+//
+//                        createTask();
+////                        createSchedule();
+//                    }
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//                        Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
+//                    }
+//                });
     }
 
     public void createTask () {
@@ -210,6 +237,7 @@ public class AddTaskFragment extends DialogFragment {
         T.groupid = groupID;
         T.schedule = memberIDList;
         T.groupname = groupName;
+        T.groupcolor = groupColor;
 
         // Add task to group and user in Firebase
         mDatabase.child("groups").child(groupID).child("tasks").child(T.taskname).setValue(T);

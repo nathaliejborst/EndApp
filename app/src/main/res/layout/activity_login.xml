@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:hint="E-mail address"
-            android:text="h@h.nl"
+            android:text="o@o.nl"
             android:layout_gravity="center"/>
 
     </android.support.design.widget.TextInputLayout>
