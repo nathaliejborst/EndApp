@@ -6,6 +6,7 @@ Able to create groups with members and tasks. Every task has a startdate and fre
 ### App structure
 
 
+<img src="https://raw.githubusercontent.com/nathaliejborst/EndApp/master/doc/Screenshot_1517496877.png" width="160" height="265" />
 #### LoginActivity.java
 Let the user log into the app with e-mail and password or register with a non-unique username, e-mail and password. Also checks requirements like special characters for usernames Firebase can’t handle and checks for no blank fields.  Accounts are stored in Firebase. Re-directs the user if he/she is already logged in. User is created using the User class. 
 
@@ -16,31 +17,31 @@ Functions as a fragment container and initiates bottomnavigationbar and handles 
 #### EasterActivity.java
 Displays a gif. Is opened when logo is clicked on log in screen. 
 
-
+<img src="https://raw.githubusercontent.com/nathaliejborst/EndApp/master/doc/profilefragment.png" width="160" height="265" />
 #### ProfileFragment.java
 User is able to log out and views it’s personal tasks. By clicking on the tasks button, tasks from every group the user is a member in will be retrieved from Firebase and shown in a custom listview (CalendarTaskAdapter.java). The user will be re-direct to the group details on list item click. 
 
-
+<img src="https://raw.githubusercontent.com/nathaliejborst/EndApp/master/doc/showgroupsfragment.png" width="160" height="265" />
 #### ShowGroupsFragment.java
 Contains two buttons. One button let the user create a new group and re-directs to a new fragment. The other button shows the groups the user is a member of and the amount of tasks and users per group in a custom listview (ShowGroupsAdapter.java). When clicked on the group listview item, the user is re-directed to the concerning group details fragment.
 
-
+<img src="https://raw.githubusercontent.com/nathaliejborst/EndApp/master/doc/groupnameactivity.png" width="160" height="265" />
 #### GroupnameFragment.java
 User can set a groupname and choose a group color for a new group he/she wants to create. Fragment checks groupname requirements and handles the visual aspect of selecting a color. Then it re-directs to find users fragment where he/she can add members to their newly added group.
 
-
+<img src="https://raw.githubusercontent.com/nathaliejborst/EndApp/master/doc/findusersfragment.png" width="160" height="265" />
 #### FindUsersFragment.java
 User can search users by e-mail using the .startsAt() function from Firebase. Fragment shows name and e-mail of user from search results in a custom listview (GroupMembersAdapter.java) and is able to add the user to a users-to-add list. When clicking on a user in that list the user is removed from the users-to-add-list. Furthermore the user can create the group and thus add the group with it’s members and details to Firebase. When created, the user gets re-directed to the details of the newly created group.
 
-
+<img src="https://raw.githubusercontent.com/nathaliejborst/EndApp/master/doc/groupdetailsfragment.png" width="160" height="265" />
 #### GroupDetailsFragment.java
 Shows groupname of given group on top of screen and sets a semi-transparant overlay of the groupcolor over the groupphoto. Retrieves users and tasks from group and fills custom listviews with the members (GroupMembersAdapter.java)  and tasks of groups (CalendarTaskAdapter.java). User is able to create a new task by filling in a taskname and on confirm gets re-directed to the add task fragment in order to choose a startdate, frequency and add the task to Firebase. Fragment also doesn’t allow empty tasknames or duplicate tasknames within a group. 
 
-
+<img src="https://raw.githubusercontent.com/nathaliejborst/EndApp/master/doc/addtaskfragment.png" width="160" height="265" />
 #### AddTaskFragment.java
 Dialogfragment that implements the compact calendar library. Fragment receives taskname and groupdetails from previous fragment. User is able to choose a startdate for the task by clicking a date on the calendar. User is also able to choose between frequencies daily, weekly and monthly. When creating the task the users will randomly by arranged into a schedule. Task is added to every user’s child and the group child in Firebase. Task is created using the Task class.
 
-
+<img src="https://raw.githubusercontent.com/nathaliejborst/EndApp/master/doc/calendarfragment.png" width="160" height="265" />
 #### CalendarFragment.java
 Uses the compact calendar library to show users tasks per date. Retrieves tasks for every group of user and makes a personal schedule given the task frequency, startdate amount of users and the group schedule. Creates an event for every task of user with the marker color as group color. Also shows tasks per day when day clicked in a custom listview. On list item click the groupname is shown via and alert message.
 
