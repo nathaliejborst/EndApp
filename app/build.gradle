@@ -40,8 +40,10 @@ dependencies {
     compile 'com.github.sundeepk:compact-calendar-view:2.0.2.2'
     compile 'com.android.volley:volley:1.0.0'
     compile 'com.roomorama:caldroid:3.0.1'
+    compile 'com.koushikdutta.ion:ion:2.+'
     implementation 'com.android.support:design:26.1.0'
 }
+
 
 
 apply plugin: 'com.google.gms.google-services'

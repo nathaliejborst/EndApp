@@ -37,7 +37,7 @@ import java.util.List;
 public class ProfileFragment extends Fragment {
     private DatabaseReference mDatabase;
     private Button logOutButton, tasksButton;
-    private TextView lineTasks;
+    private View lineTasks;
     private ListView tasksList;
     private ArrayList<String> usersGroupsIDList= new ArrayList<String>();
     private ArrayList<Task> mTasksList= new ArrayList<Task>();
@@ -64,7 +64,7 @@ public class ProfileFragment extends Fragment {
         // Get views from XML
         logOutButton = (Button) view.findViewById(R.id.log_out_button);
         tasksButton = (Button) view.findViewById(R.id.tasks_button);
-        lineTasks = (TextView) view.findViewById(R.id.tasks_line);
+        lineTasks = (View) view.findViewById(R.id.tasks_line);
         tasksList = (ListView) view.findViewById(R.id.upcoming_tasks_lv);
 
         // Set tasks invisible by default
@@ -88,14 +88,14 @@ public class ProfileFragment extends Fragment {
             // Show/Hide tasks and change buttoncolor on click
             if(!taskvisible){
                 tasksButton.setTextColor(Color.parseColor("#66B2FF"));
-                lineTasks.setTextColor(Color.parseColor("#66B2FF"));
+                lineTasks.setBackgroundColor(Color.parseColor("#66B2FF"));
                 tasksList.setVisibility(View.VISIBLE);
 
                 // Set boolean to true
                 taskvisible = true;
             } else {
                 tasksButton.setTextColor(Color.parseColor("#FF8000"));
-                lineTasks.setTextColor(Color.parseColor("#FF8000"));
+                lineTasks.setBackgroundColor(Color.parseColor("#FF8000"));
                 tasksList.setVisibility(View.INVISIBLE);
 
                 // Set boolean to false

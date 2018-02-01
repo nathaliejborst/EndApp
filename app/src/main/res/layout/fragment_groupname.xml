@@ -23,7 +23,6 @@
             android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:ellipsize="start"
-            android:text="default"
             android:inputType="textPersonName"
             android:hint="Enter group name" />
 
@@ -44,7 +43,7 @@
             android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:layout_marginTop="7dp"
+                    android:layout_marginTop="6dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -55,7 +54,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:textAlignment="center"
-                            android:visibility="invisible"
+                            android:visibility="visible"
                             android:text="○"
                             android:textSize="50dp"/>
                         <TextView

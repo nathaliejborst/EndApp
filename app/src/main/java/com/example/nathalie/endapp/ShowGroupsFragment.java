@@ -32,20 +32,17 @@ import java.util.TimerTask;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ShowGroupsFragment extends Fragment {
+public class ShowGroupsFragment extends Fragment implements View.OnClickListener {
     private DatabaseReference mDatabase;
-    private FirebaseAuth mAuth;
 
     private Button newGroupButton, showGroupsButton;
-    private TextView lineAddGroup, lineShowGroups, addTaskTV;
+    private TextView lineAddGroup, lineShowGroups;
     private ListView showUsersGroups;
-    private ArrayList<String> usersGroupsList= new ArrayList<String>();
+
     private ArrayList<String> usersGroupsIDList= new ArrayList<String>();
     private ArrayList<Group> mGroupsList= new ArrayList<Group>();
     private boolean showGroups;
     User U;
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,7 +55,6 @@ public class ShowGroupsFragment extends Fragment {
         U.setCurrentuser();
 
         // Initialize Firebase
-        mAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Don't show groups by default
@@ -71,15 +67,130 @@ public class ShowGroupsFragment extends Fragment {
         lineAddGroup = (TextView) view.findViewById(R.id.add_group_line);
         lineShowGroups = (TextView) view.findViewById(R.id.show_groups_line);
 
+        // Set on click listeners
+        newGroupButton.setOnClickListener(this);
+        showGroupsButton.setOnClickListener(this);
 
+        return view;
+    }
 
-        // Fill listview with groups from user
-        getUsersGroups();
-
-        // Re-direct to fragment to add a new group
-        newGroupButton.setOnClickListener(new View.OnClickListener() {
+    // Gets all groups where current user is a member of from Firebase
+    public void getUsersGroups () {
+        // Lookup in Firebase current user
+        mDatabase.child("users").child(U.id).child("personal groups")
+            .addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Clear groups ID list before filling it with data from Firebase
+                usersGroupsIDList.clear();
+
+                // Loop over all groups to get name and ID
+                for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                    // Add group ID's to list
+                    usersGroupsIDList.add(String.valueOf(childDataSnapshot.getKey()));
+                }
+
+                // Get task and member amount per group
+                getTaskAndMemberCount();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
+            }
+        });
+    }
+
+    // Re-directs to group details fragment
+    public void showGroupDetails (String groupName, String groupID) {
+        // Create bundle to transfer groupname and -ID to next fragment
+        Bundle bundle = new Bundle();
+        bundle.putString("Group name", groupName);
+        bundle.putString("GroupID", groupID);
+
+        // Initialize group details fragment and set arguments
+        GroupDetailsFragment groupDetailsFragment = new GroupDetailsFragment();
+        groupDetailsFragment.setArguments(bundle);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+        // Replace fragment
+        transaction.replace(R.id.frame, groupDetailsFragment, "groupdetails");
+
+        // Commit the transaction
+        transaction.addToBackStack(null).commit();
+    }
+
+    public void getTaskAndMemberCount () {
+        // Loop over every group to get amount of tasks and members per group
+        for (int i = 0; i < usersGroupsIDList.size(); i++) {
+            // Clear list because otherwise groups will be shown twice when clicked multiple times
+            mGroupsList.clear();
+
+            // Get task and member count from Firebase
+            mDatabase.child("groups").child(usersGroupsIDList.get(i)).
+                addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // Get group details for group
+                        Group G = new Group();
+                        G = dataSnapshot.getValue(Group.class);
+
+                        // Get tasks and users per group
+                        G.tasksAmount = String.valueOf(dataSnapshot.child("tasks").getChildrenCount());
+                        G.usersAmount = String.valueOf(dataSnapshot.child("users").getChildrenCount());
+
+                        // Add group to groupslist
+                        mGroupsList.add(G);
+
+                        // Fill listview with groups
+                        fillGroupsListview();
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
+                    }
+            });
+        }
+    }
+
+    // Fills custom listview with user's groups
+    public void fillGroupsListview () {
+        // Set adapter for listview
+        ShowGroupsAdapter cAdapter= new ShowGroupsAdapter(getContext(), R.layout.item_group_list, mGroupsList);
+        showUsersGroups.setAdapter(cAdapter);
+
+        // Re-direct to selected group details
+        showUsersGroups.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                showGroupDetails(mGroupsList.get(i).groupname, usersGroupsIDList.get(i));
+            }
+        });
+    }
+
+    // Changes color of show groups button and shows/hides listview with groups
+    public void groupsButtonClicked () {
+        // Shows groups and turns views blue when button clicked and not yet visible
+        if(!showGroups) {
+            showGroupsButton.setTextColor(getResources().getColor(R.color.colorPrimary));
+            lineShowGroups.setTextColor(getResources().getColor(R.color.colorPrimary));
+            showUsersGroups.setVisibility(View.VISIBLE);
+
+            showGroups = true;
+        // Hides groups and turns views back to orange when button clicked and already visible
+        } else {
+            showGroupsButton.setTextColor(getResources().getColor(R.color.mainOrange));
+            lineShowGroups.setTextColor(getResources().getColor(R.color.mainOrange));
+            showUsersGroups.setVisibility(View.INVISIBLE);
+
+            showGroups = false;
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.new_group_button:
+                // Initialize group fragment to re-direct to groupname fragment
                 GroupnameFragment groupnameFragment = new GroupnameFragment();;
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
@@ -89,165 +200,16 @@ public class ShowGroupsFragment extends Fragment {
 
                 // Commit the transaction
                 transaction.commit();
-            }
-        });
 
-        showGroupsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Show found users in listview
-//                fillSimpleListView(usersGroupsList);
-
-//                getTaskAndMemberCount();
-                fillGroupsListview();
-                showUsersGroups.requestLayout();
-                itemClicked(v);
-
-            }
-        });
-        return view;
-
-    }
-
-    public void getUsersGroups () {
-        // Lookup in Firebase current user
-        mDatabase.child("users").child(U.id).child("personal groups")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        // Get users details for every user in search result
-                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-
-                            // Add group id's and names to list
-                            usersGroupsList.add(String.valueOf(childDataSnapshot.child("groupname").getValue()));
-                            usersGroupsIDList.add(String.valueOf(childDataSnapshot.getKey()));
-                        }
-
-                        getTaskAndMemberCount();
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
-                    }
-                });
-    }
-
-    public void fillSimpleListView (final ArrayList list) {
-        ListAdapter theAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
-
-        // Set the adapter
-        showUsersGroups.setAdapter(theAdapter);
-        showUsersGroups.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
-
-                showGroupDetails(showUsersGroups.getItemAtPosition(i).toString(), usersGroupsIDList.get(i));
-            }
-        });
-    }
-
-    public void showGroupDetails (String groupName, String groupID) {
-        // Create bundle to transfer groupname to next fragment
-        Bundle bundle = new Bundle();
-        bundle.putString("Group name", groupName);
-        bundle.putString("GroupID", groupID);
-
-        Log.d("hallo group id bundle", "" + groupID);
-
-
-        GroupDetailsFragment groupDetailsFragment = new GroupDetailsFragment();
-        groupDetailsFragment.setArguments(bundle);
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-        // Replace fragment
-        transaction.replace(R.id.frame, groupDetailsFragment);
-
-        // Commit the transaction
-        transaction.addToBackStack(null).commit();
-    }
-
-    public void getTaskAndMemberCount () {
-
-        for (int i = 0; i < usersGroupsIDList.size(); i++) {
-            Log.d("hallo GROUP: ", "" + usersGroupsList.get(i));
-
-            // Clear list because otherwise groups will be shown twice when clicked multiple times
-            mGroupsList.clear();
-
-            // Get task and member count from Firebase
-            mDatabase.child("groups").child(usersGroupsIDList.get(i)).
-                    addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            // Get users details for every user in search result
-                            Group G = new Group();
-                            G = dataSnapshot.getValue(Group.class);
-                            Log.d("hallo class!!! !!! ", "" + G.color);
-
-                            G.tasksAmount = String.valueOf(dataSnapshot.child("tasks").getChildrenCount());
-                            G.usersAmount = String.valueOf(dataSnapshot.child("users").getChildrenCount());
-
-                            mGroupsList.add(G);
-
-                            Log.d("hallo # users?", "" + G.usersAmount);
-                            Log.d("hallo # tasks?", "" + G.tasksAmount);
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
-                        }
-                });
-        }
-    }
-
-    public void fillGroupsListview () {
-        // Set adapter for listview
-        ShowGroupsAdapter cAdapter= new ShowGroupsAdapter(getContext(), mGroupsList);
-        showUsersGroups.setAdapter(cAdapter);
-
-
-        showUsersGroups.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("hallo groupnaam", "" + mGroupsList.get(i).groupname);
-                Log.d("hallo id", "" + usersGroupsIDList.get(i));
-                showGroupDetails(mGroupsList.get(i).groupname, usersGroupsIDList.get(i));
-            }
-        });
-
-    }
-
-    public void itemClicked (View v) {
-        switch(v.getId()){
-            case R.id.new_group_button:
-                // Change color of clicked button
-                newGroupButton.setTextColor(Color.parseColor("#66B2FF"));
-                lineAddGroup.setTextColor(Color.parseColor("#66B2FF"));
-
-                // Set other button back to default color
-                showGroupsButton.setTextColor(Color.parseColor("#FF6600"));
-                lineAddGroup.setTextColor(Color.parseColor("#FF6600"));
                 break;
             case R.id.show_groups_button:
-                // Change color of clicked button
-                if(!showGroups) {
-                    showGroupsButton.setTextColor(Color.parseColor("#66B2FF"));
-                    lineShowGroups.setTextColor(Color.parseColor("#66B2FF"));
-                    showUsersGroups.setVisibility(View.VISIBLE);
+                // Get user's groups from Firebase and fill listview
+                getUsersGroups();
 
-                    showGroups = true;
-                } else {
-                    showGroupsButton.setTextColor(Color.parseColor("#FF6600"));
-                    lineShowGroups.setTextColor(Color.parseColor("#FF6600"));
-                    showUsersGroups.setVisibility(View.INVISIBLE);
+                // Handles button click
+                groupsButtonClicked();
 
-                    showGroups = false;
-                }
                 break;
         }
-
     }
-
-
-
 }

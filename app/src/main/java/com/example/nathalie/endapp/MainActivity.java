@@ -3,45 +3,27 @@ package com.example.nathalie.endapp;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.DialogFragment;
-import android.app.DatePickerDialog;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.Toast;
-
-import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import java.util.Locale;
-
-public class MainActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
-    private Button top_button;
-    BottomNavigationView bottomNavigationView;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private DatabaseReference mDatabase;
-    private FirebaseAuth mAuth;
+
+    private Button top_button, header;
+    private BottomNavigationView bottomNavigationView;
+
     private String currentUserID = null;
     private String currentUser = "";
-    private MenuItem groupsItem, profileItem, calendarItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,127 +32,119 @@ public class MainActivity extends AppCompatActivity implements DatePickerDialog.
 
         // Check if user is logged in, re-direct to login screen if not
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            Log.d("hallo null??", "");
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
         }
 
         // Get instance and referance from Firebase and access corresponding data
-        mAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        accesDB();
 
-        // Get views from XML
+        // Access
+        accessDB();
+
+        // Get view from XML
         top_button = (Button) findViewById(R.id.top_button);
+
+        // Set on click listener for top button
+        top_button.setOnClickListener(this);
 
         // Initialize bottom navigation bar
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_nav);
         bottomNavigation();
 
-        // Re-direct to user's profile
+        // Re-direct to user's profile by default
         onProfileItemClicked();
     }
 
+    // Handles bottom navigation items
     public void bottomNavigation () {
         bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.groups_item2:
-                                onGroupsItemClicked();
-                                break;
-                            case R.id.calendar_item2:
-                                onCalendarItemClicked();
-                                break;
-                            case R.id.profile_item2:
-                                onProfileItemClicked();
-                                break;
-                        }
-                        return false;
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.groups_item:
+                            // Clear backstack before opening fragment using the bottom navigation
+                            getSupportFragmentManager().popBackStackImmediate();
+
+                            onGroupsItemClicked();
+                            break;
+                        case R.id.calendar_item:
+                            // Clear backstack before opening fragment using the bottom navigation
+                            getSupportFragmentManager().popBackStackImmediate();
+
+                            onCalendarItemClicked();
+                            break;
+                        case R.id.profile_item:
+                            // Clear backstack before opening fragment using the bottom navigation
+                            getSupportFragmentManager().popBackStackImmediate();
+
+                            onProfileItemClicked();
+                            break;
                     }
-                });
+                    return false;
+                }
+            });
     }
 
 
-    // Open groups fragment
+    // Re-directs to show groups fragment
     public void onGroupsItemClicked () {
-
-        // Send user ID to next activity
-        Bundle bundle = new Bundle();
-        bundle.putString("userID", currentUserID);
-        bundle.putString("username", currentUser);
-
+        // Opens groupsfragment and adds to backstack
         ShowGroupsFragment showGroupsFragment = new ShowGroupsFragment();
         getSupportFragmentManager().beginTransaction().
                 replace(R.id.frame, showGroupsFragment).addToBackStack(null).commit();
     }
 
+    // Re-directs to calendar fragment
     public void onCalendarItemClicked () {
         // Send user ID to next activity
         Bundle bundle = new Bundle();
         bundle.putString("userID", currentUserID);
 
+        // Open calendar fragment and adds to backstack
         CalendarFragment calendarFragment = new CalendarFragment();
         getSupportFragmentManager().beginTransaction().
                 replace(R.id.frame, calendarFragment).addToBackStack(null).commit();
     }
 
-    @Override
-    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.YEAR, year);
-        c.set(Calendar.MONTH, month);
-        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(c.getTime());
-    }
-
+    // Re-directs to profile fragment
     public void onProfileItemClicked () {
+        // Opens profile fragment and adds to backstack
         ProfileFragment profileFragment = new ProfileFragment();
         getSupportFragmentManager().beginTransaction().
                 replace(R.id.frame, profileFragment).addToBackStack(null).commit();
-
     }
 
-    public void accesDB () {
+    // Access Firebase and get username from current user
+    public void accessDB () {
         mDatabase.child("users")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        showCurrentUsername(dataSnapshot);
-
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
-                    }
-                });
+            .addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    showCurrentUsername(dataSnapshot);
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
+                }
+            });
     }
 
+    // Show username of currently logged in user on top of screen
     public void showCurrentUsername (DataSnapshot dataSnapshot) {
         currentUser = String.valueOf(dataSnapshot.child(currentUserID).child("username").getValue());
-        Log.w("hallo_i", "name " + dataSnapshot.child(currentUserID).child("username").getValue());
-        Log.w("hallo_i", "id " + currentUserID);
         top_button.setText("Welcome "  + currentUser);
-
-
     }
 
-    public void getGroups (DataSnapshot dataSnapshot) {
-
-        // Check if user already is in at least one group
-        if (dataSnapshot.child(currentUserID).getChildrenCount() == 3) {
-//                            ShowGroupsFragment showGroupFragment = new ShowGroupsFragment();
-//                            getSupportFragmentManager().beginTransaction().
-//                                    replace(R.id.frame, showGroupFragment).commit();
-
-        } else {
-            GroupnameFragment groupnameFragment = new GroupnameFragment();
-            getSupportFragmentManager().beginTransaction().
-                    replace(R.id.frame, groupnameFragment).commit();
+    @Override
+    public void onClick(View view) {
+        // Re-directs to user's profile on top button clicked
+        switch(view.getId()) {
+            case R.id.top_button:
+                onProfileItemClicked();
+                break;
         }
     }
-
 }

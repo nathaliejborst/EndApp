@@ -94,15 +94,22 @@ public class CalendarFragment extends Fragment {
             public void onDayClick(Date dateClicked) {
                 // Clear list otherwise tasks will be shown multiple times if date is clicked more than once
                 dayEvents.clear();
+                mTasksList.clear();
 
                 // Get events on selected date and add to String list
                 List<Event> events = compactCalendar.getEvents(dateClicked);
                 for (int i = 0; i < events.size(); i++) {
                     dayEvents.add(String.valueOf(events.get(i).getData()));
+                    Object o = events.get(i).getData();
+                    Task OT = (Task)o;
+
+                    mTasksList.add(OT);
+                    Log.d("hallo taskclass? name", "" + OT.taskname);
+
 //                    mTasksList.add((Task) events.get(i).getData());
                 }
                 fillTasksListview();
-                fillSimpleListView(dayEvents);
+//                fillSimpleListView(dayEvents);
             }
 
             @Override
@@ -245,19 +252,19 @@ public class CalendarFragment extends Fragment {
         Long taskDate = c.getTimeInMillis();
 
         // Add task to calendar with the the groupcolor as marker color
-        Event event = new Event(Color.rgb(255, 255, 255), taskDate, T.taskname +"     (" + T.groupname + ")");
+        Event event = new Event(Color.rgb(255, 255, 255), taskDate, T);
         switch(T.groupcolor) {
             case "magenta":
-                event = new Event(Color.rgb(186, 85, 211), taskDate, T.taskname +"     (" + T.groupname + ")");
+                event = new Event(Color.rgb(186, 85, 211), taskDate, T);
                 break;
             case "cyan":
                 event = new Event(Color.rgb(144, 238, 144), taskDate, T);
                 break;
             case "yellow":
-                event = new Event(Color.rgb(255, 215, 0), taskDate, T.taskname +"     (" + T.groupname + ")");
+                event = new Event(Color.rgb(255, 215, 0), taskDate, T);
                 break;
             case "blue":
-                event = new Event(Color.rgb(65, 105, 225), taskDate, T.taskname +"     (" + T.groupname + ")");
+                event = new Event(Color.rgb(65, 105, 225), taskDate, T);
                 break;
             case "red":
                 event = new Event(Color.rgb(255, 69, 0), taskDate, T);
@@ -274,8 +281,8 @@ public class CalendarFragment extends Fragment {
         showTasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // Re-direct to group details on list item click
-
+                // Show group name on click
+                LoginActivity.showAlert(view.getTag().toString(), getActivity());
             }
         });
     }

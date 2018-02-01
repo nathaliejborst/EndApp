@@ -52,7 +52,6 @@ public class GroupMembersAdapter extends BaseAdapter {
         member.setText(mMemberslist.get(i).username);
         email.setText(mMemberslist.get(i).email);
 
-        v.setTag(mMemberslist.get(i).username);
         return v;
     }
 }

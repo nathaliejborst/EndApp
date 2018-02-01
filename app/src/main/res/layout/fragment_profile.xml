@@ -1,68 +1,88 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.example.nathalie.endapp.ProfileFragment">
 
-    <TextView
-        android:id="@+id/log_out_line"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="19dp"
-        android:textColor="@color/mainOrange"
-        android:textSize="6dp"
-        android:text="___________________________________________________" />
-
-    <TextView
-        android:id="@+id/tasks_line"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="67dp"
-        android:layout_gravity="right"
-        android:textColor="@color/mainOrange"
-        android:textSize="6dp"
-        android:text="___________________________________________________" />
-
-    <TextView
-        android:id="@+id/change_name_line"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="115dp"
-        android:layout_gravity="right"
-        android:textColor="@color/mainOrange"
-        android:textSize="6dp"
-        android:visibility="invisible"
-        android:text="___________________________________________________" />
-
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <View
+            android:id="@+id/log_out_line"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_weight="4"
+            android:layout_marginTop="24dp"
+            android:background="@color/mainOrange" />
 
         <Button
             android:id="@+id/log_out_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/caldroid_transparent"
+            android:layout_weight="5"
+            android:gravity="center"
             android:text="Log out"
             android:textColor="#ff9933" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:visibility="invisible"
+            android:layout_marginTop="22dp"
+            android:layout_weight="4" />
+
+    </LinearLayout>
+
+    <!--<TextView-->
+        <!--android:id="@+id/log_out_line"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="19dp"-->
+        <!--android:textColor="@color/mainOrange"-->
+        <!--android:textSize="6dp"-->
+        <!--android:text="___________________________________________________" />-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:visibility="invisible"
+            android:layout_marginTop="12dp"
+            android:layout_weight="4" />
 
         <Button
             android:id="@+id/tasks_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="5"
             android:background="@color/caldroid_transparent"
             android:text="Tasks"
             android:textColor="#ff9933" />
 
-        <ListView
-            android:id="@+id/upcoming_tasks_lv"
+        <View
+            android:id="@+id/tasks_line"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            android:layout_marginTop="6dp"/>
+            android:layout_height="1dp"
+            android:layout_marginTop="25dp"
+            android:layout_weight="4"
+            android:background="@color/mainOrange" />
+
     </LinearLayout>
 
-</FrameLayout>
+    <ListView
+        android:id="@+id/upcoming_tasks_lv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:visibility="invisible" />
+
+</LinearLayout>

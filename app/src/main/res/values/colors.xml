@@ -5,5 +5,11 @@
     <color name="colorAccent">#66B2FF</color>
     <color name="mainOrange">#FF8000</color>
     <color name="darkOrange">#FF6600</color>
+    <color name="colorMagenta">#BA55D3</color>
+    <color name="colorCyan">#90EE90</color>
+    <color name="colorYellow">#FFD700</color>
+    <color name="colorBlue">#4169E1</color>
+    <color name="colorRed">#FF4500</color>
+
 
 </resources>

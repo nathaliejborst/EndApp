@@ -19,4 +19,36 @@ public class Group {
         this.tasksAmount = tasksAmount;
         this.usersAmount = usersAmount;
     }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getGroupname() {
+        return groupname;
+    }
+
+    public void setGroupname(String groupname) {
+        this.groupname = groupname;
+    }
+
+    public String getTasksAmount() {
+        return tasksAmount;
+    }
+
+    public void setTasksAmount(String tasksAmount) {
+        this.tasksAmount = tasksAmount;
+    }
+
+    public String getUsersAmount() {
+        return usersAmount;
+    }
+
+    public void setUsersAmount(String usersAmount) {
+        this.usersAmount = usersAmount;
+    }
 }

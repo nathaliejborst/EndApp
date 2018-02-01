@@ -3,12 +3,11 @@
     android:icon="@drawable/ic_group_black_24dp">
     <item
         android:title="groups"
-        android:id="@+id/groups_item"
+        android:id="@+id/groups_item2"
         android:icon="@drawable/ic_group_black_24dp" />
 
     <item
         android:title="tasks"
-        android:id="@+id/tasks_item"
+        android:id="@+id/tasks_item2"
         android:icon="@android:drawable/ic_menu_agenda" />
-
 </menu>

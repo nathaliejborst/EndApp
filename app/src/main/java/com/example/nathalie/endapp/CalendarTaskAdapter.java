@@ -13,7 +13,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by minor on 29/01/2018.
+ * Created by Nathalie Borst on 29/01/2018.
+ * Adapter that takes a list with a Task.class as input and shows taskname, frequency and starting
+ * dat per task
  */
 
 public class CalendarTaskAdapter extends BaseAdapter {
