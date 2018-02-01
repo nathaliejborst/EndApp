@@ -88,7 +88,6 @@
 
     </android.support.design.widget.TextInputLayout>
 
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -111,7 +110,6 @@
             android:text="Register"
             android:visibility="invisible" />
     </FrameLayout>
-
 
     <FrameLayout
         android:layout_width="match_parent"
