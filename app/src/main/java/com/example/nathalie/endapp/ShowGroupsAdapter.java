@@ -14,17 +14,12 @@ import org.w3c.dom.Text;
 import java.util.List;
 
 /**
- * Created by minor on 30/01/2018.
+ * Created by Nathalie Borst on 30/01/2018.
  */
 
 public class ShowGroupsAdapter extends ArrayAdapter {
     private Context mContext;
     private List<Group> mGroupslist;
-
-//    public ShowGroupsAdapter(Context mContext, List<Group> mGroupslist) {
-//        this.mContext = mContext;
-//        this.mGroupslist = mGroupslist;
-//    }
 
 
     public ShowGroupsAdapter(@NonNull Context context, int resource, @NonNull List<Group> mGroupslist) {
@@ -60,8 +55,7 @@ public class ShowGroupsAdapter extends ArrayAdapter {
         TextView usersAmount = (TextView)v.findViewById(R.id.members_amount_tv);
         TextView colorMarker = (TextView)v.findViewById(R.id.color_marker_tv);
 
-
-        // Get groupcolor to string
+        // Get groupcolor
         String color = mGroupslist.get(i).getColor();
 
         // Change textview text to groupview
@@ -85,39 +79,12 @@ public class ShowGroupsAdapter extends ArrayAdapter {
             tasks.setText("task");
         }
 
+        // Show amount of tasks and amount of members
         tasksAmount.setText(mGroupslist.get(i).tasksAmount);
         usersAmount.setText(mGroupslist.get(i).usersAmount);
 
         v.setTag(mGroupslist.get(i).groupname);
 
         return v;
-    }
-
-    private void StringCompare (String color) {
-
-        switch (color) {
-            case "magenta":
-                Log.d("hallo magenta", "");
-                break;
-            case "cyan":
-                Log.d("hallo cyan", "");
-                break;
-            case "yellow":
-                Log.d("hallo yellow", "");
-                break;
-            case "blue":
-                Log.d("hallo blue", "");
-                break;
-            case "red":
-                Log.d("hallo red", "");
-                break;
-        }
-
-
-    }
-
-
-    private enum groupColor {
-        magenta, cyan, yellow, blue, red;
     }
 }

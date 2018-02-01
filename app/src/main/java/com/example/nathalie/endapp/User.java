@@ -12,14 +12,14 @@ import java.util.ArrayList;
 
 /**
  * Created by Nathalie on 12-1-2018.
+ * User contains an id, email and id. Class is able to get id and username of current user from
+ * Firebase
  */
 
 public class User {
     public String username;
     public String email;
     public String id;
-    public String currentUsername;
-    public String currentUserID;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
@@ -31,19 +31,22 @@ public class User {
         this.id = id;
     }
 
+    // Get current user ID and -name for Firebase
     public void setCurrentuser () {
+        // Get current user's ID
         id = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+        // Access Firebase
         FirebaseDatabase.getInstance().getReference().child("users")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        username = String.valueOf(dataSnapshot.child(id).child("username").getValue());
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
-                    }
-                });
+            .addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    username = String.valueOf(dataSnapshot.child(id).child("username").getValue());
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
+                }
+            });
     }
 }

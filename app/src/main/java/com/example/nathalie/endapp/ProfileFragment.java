@@ -1,10 +1,7 @@
 package com.example.nathalie.endapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.icu.text.DateFormat;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -14,11 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CalendarView;
-import android.widget.DatePicker;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -26,27 +19,22 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.roomorama.caldroid.CaldroidFragment;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements View.OnClickListener {
     private DatabaseReference mDatabase;
+
     private Button logOutButton, tasksButton;
     private View lineTasks;
     private ListView tasksList;
     private ArrayList<String> usersGroupsIDList= new ArrayList<String>();
     private ArrayList<Task> mTasksList= new ArrayList<Task>();
+
     private boolean taskvisible;
 
-
-
     User U;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,96 +58,101 @@ public class ProfileFragment extends Fragment {
         // Set tasks invisible by default
         taskvisible = false;
 
+        // Get user's tasks from Firebase
         getTasks();
 
+        // Set on click listeners
+        logOutButton.setOnClickListener(this);
+        tasksButton.setOnClickListener(this);
 
-        logOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(getActivity(), LoginActivity.class);
-            startActivity(intent);
-            }
-        });
-
-        tasksButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            // Show/Hide tasks and change buttoncolor on click
-            if(!taskvisible){
-                tasksButton.setTextColor(Color.parseColor("#66B2FF"));
-                lineTasks.setBackgroundColor(Color.parseColor("#66B2FF"));
-                tasksList.setVisibility(View.VISIBLE);
-
-                // Set boolean to true
-                taskvisible = true;
-            } else {
-                tasksButton.setTextColor(Color.parseColor("#FF8000"));
-                lineTasks.setBackgroundColor(Color.parseColor("#FF8000"));
-                tasksList.setVisibility(View.INVISIBLE);
-
-                // Set boolean to false
-                taskvisible = false;
-            }
-            }
-        });
+//
+//        logOutButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//            FirebaseAuth.getInstance().signOut();
+//            Intent intent = new Intent(getActivity(), LoginActivity.class);
+//            startActivity(intent);
+//            }
+//        });
+//
+//        tasksButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//            // Show/Hide tasks and change buttoncolor on click
+//            if(!taskvisible){
+//                tasksButton.setTextColor(Color.parseColor("#66B2FF"));
+//                lineTasks.setBackgroundColor(Color.parseColor("#66B2FF"));
+//                tasksList.setVisibility(View.VISIBLE);
+//
+//                // Set boolean to true
+//                taskvisible = true;
+//            } else {
+//                tasksButton.setTextColor(Color.parseColor("#FF8000"));
+//                lineTasks.setBackgroundColor(Color.parseColor("#FF8000"));
+//                tasksList.setVisibility(View.INVISIBLE);
+//
+//                // Set boolean to false
+//                taskvisible = false;
+//            }
+//            }
+//        });
         return view;
 
-        }
-
-        public void getTasks () {
-            // Lookup in Firebase current user
-            mDatabase.child("users").child(U.id).child("personal groups")
-                    .addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            // Get task from every group from Firebase
-                            for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                                // Add group id to list
-                                String groupID = String.valueOf(childDataSnapshot.getKey());
-
-                                for (DataSnapshot taskDataSnapshot : childDataSnapshot.child("tasks").getChildren()) {
-                                    Log.d("hallo snapc", " " + taskDataSnapshot);
-
-                                    // Get task from Firebas
-                                    Task T = taskDataSnapshot.getValue(Task.class);
-                                    usersGroupsIDList.add(groupID);
-                                    mTasksList.add(T);
-                                    Log.d("hallo taksname?", "" + T.taskname);
-                                }
-                            }
-
-                            fillTasksListview();
-                        }
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
-                        }
-                    });
-
-
-        }
-
-        public void fillTasksListview () {
-        // Set adapter for listview
-        CalendarTaskAdapter cAdapter= new CalendarTaskAdapter(getContext(), mTasksList);
-        tasksList.setAdapter(cAdapter);
-
-        tasksList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // Re-direct to group details on list item click
-                showGroupDetails(String.valueOf(view.getTag()), usersGroupsIDList.get(i));
-            }
-        });
     }
 
+    // Get user's tasks from Firebase and fill listview
+    public void getTasks () {
+        // Lookup in Firebase current user
+        mDatabase.child("users").child(U.id).child("personal groups")
+            .addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // Loop over every group of user
+                    for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                        // Add group id to list
+                        String groupID = String.valueOf(childDataSnapshot.getKey());
+
+                        // Loop over every task of the group
+                        for (DataSnapshot taskDataSnapshot : childDataSnapshot.child("tasks").getChildren()) {
+                            // Get task from Firebase and ad groupID and task to lists
+                            Task T = taskDataSnapshot.getValue(Task.class);
+                            usersGroupsIDList.add(groupID);
+                            mTasksList.add(T);
+                        }
+                    }
+                    // Fill custom listviews with tasks
+                    fillTasksListview();
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
+                }
+            });
+    }
+
+    // Fills custom listview with tasks of user
+    public void fillTasksListview () {
+    // Set adapter for listview
+    CalendarTaskAdapter cAdapter= new CalendarTaskAdapter(getContext(), mTasksList);
+    tasksList.setAdapter(cAdapter);
+
+    // Re-directs to group details on list item click
+    tasksList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            showGroupDetails(String.valueOf(view.getTag()), usersGroupsIDList.get(i));
+        }
+    });
+    }
+
+    // Re-directs to the show group details fragment which shows the details of selected group
     public void showGroupDetails (String groupName, String groupID) {
         // Create bundle to transfer groupname to next fragment
         Bundle bundle = new Bundle();
         bundle.putString("Group name", groupName);
         bundle.putString("GroupID", groupID);
 
+        // Initiliaze fragment and set arguments
         GroupDetailsFragment groupDetailsFragment = new GroupDetailsFragment();
         groupDetailsFragment.setArguments(bundle);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -169,6 +162,37 @@ public class ProfileFragment extends Fragment {
 
         // Commit the transaction
         transaction.addToBackStack(null).commit();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.log_out_button:
+                // Sign user out and re-direct to the login screen
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.tasks_button:
+                // Shows/Hides tasks and change buttoncolor on click
+                if(!taskvisible){
+                    tasksButton.setTextColor(Color.parseColor("#66B2FF"));
+                    lineTasks.setBackgroundColor(Color.parseColor("#66B2FF"));
+                    tasksList.setVisibility(View.VISIBLE);
+
+                    // Set boolean to true
+                    taskvisible = true;
+                } else {
+                    tasksButton.setTextColor(Color.parseColor("#FF8000"));
+                    lineTasks.setBackgroundColor(Color.parseColor("#FF8000"));
+                    tasksList.setVisibility(View.INVISIBLE);
+
+                    // Set boolean to false
+                    taskvisible = false;
+                }
+
+                break;
+        }
     }
 
 }

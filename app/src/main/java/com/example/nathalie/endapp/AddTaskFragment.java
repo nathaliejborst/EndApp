@@ -32,31 +32,29 @@ import java.util.Date;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AddTaskFragment extends DialogFragment {
+public class AddTaskFragment extends DialogFragment implements View.OnClickListener {
     private DatabaseReference mDatabase;
 
-    CompactCalendarView compactCalendar;
-    TextView currentMonth;
-    Spinner frequencyS;
-    LinearLayout taskFrag;
-    Button confirmDate;
-    String dayClicked, monthClicked, yearClicked, groupID, taskName, epochString, groupName, groupColor;
-    int freq;
-
+    private CompactCalendarView compactCalendar;
+    private TextView currentMonth;
+    private Spinner frequencyS;
+    private LinearLayout taskFrag;
+    private Button confirmDate;
+    private String monthClicked, groupID, taskName, groupName, groupColor;
+    private int freq;
+    private long epoch = 0;
     private ArrayList<String> memberIDList = new ArrayList<String>();
+
     Task T;
     User U;
-
-    private long epoch = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_add_task, container, false);
-//        getDialog().setTitle("Simple Dialog");
 
-        // Get group ID from previous fragment
+        // Get group ID, groupname and taskname from previous fragment
         groupID  = getArguments().getString("GroupID");
         taskName = getArguments().getString("taskname");
         groupName = getArguments().getString("groupname");
@@ -64,6 +62,9 @@ public class AddTaskFragment extends DialogFragment {
         // Initialize user details of current user;
         U = new User();
         U.setCurrentuser();
+
+        // Initialze task instance
+        T = new Task();
 
         // Get instance of database
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -75,63 +76,56 @@ public class AddTaskFragment extends DialogFragment {
         taskFrag = (LinearLayout) view.findViewById(R.id.taskfrag);
         frequencyS = (Spinner) view.findViewById(R.id.spinner);
 
-        // Set title to current month
+        // Set title of calendar to current month
         Calendar cal = Calendar.getInstance();
-        final Date date = new Date();
+//        final Date date = new Date();
         currentMonth.setText(new SimpleDateFormat("MMM").format(cal.getTime()));
         currentMonth.append(" " + new SimpleDateFormat("yyyy").format(cal.getTime()));
 
-        // Initialze task instance
-        T = new Task();
+        // Set on click listener
+        confirmDate.setOnClickListener(this);
 
-        // Get chosen date and frequency and add task to Firebase
-        confirmDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Check is user selected a start date
-                if (epoch == 0) {
-                    showAlert("Please choose a start date");
-                    return;
-                }
-
-                // Convert selected date to long for compactcalendar format
-                dateToLong();
-
-                addTaskToDatabase();
-
-                // 'Close' fragment
-                taskFrag.setVisibility(View.GONE);
-            }
-        });
+//        // Get chosen date and frequency and add task to Firebase
+//        confirmDate.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // Check is user selected a start date
+//                if (epoch == 0) {
+//                    showAlert("Please choose a start date");
+//                    return;
+//                }
+//
+//                // Convert selected date to long for compactcalendar format
+//                dateToLong();
+//
+//                addTaskToDatabase();
+//
+//                // 'Close' fragment
+//                taskFrag.setVisibility(View.GONE);
+//            }
+//        });
 
         // Initialize calendar
         compactCalendar.setShouldDrawDaysHeader(true);
         compactCalendar.setUseThreeLetterAbbreviation(true);
 
+        // Add listeners to calendar
         compactCalendar.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
             public void onDayClick(Date dateClicked) {
-                // Convert selected date to Strings
-                Log.d("hallo date", " " + dateClicked.getMonth());
-                Log.d("hallo date", " " + dateClicked.getTime());
-
+                // Get clicked date in milliseconds
                 epoch = dateClicked.getTime();
 
-
-//                dateClicked.getMonth()
-
-//                dayClicked = String.valueOf(dateClicked).substring(8, 10);
+                // Get the clicked month
                 monthClicked = String.valueOf(dateClicked.getMonth());
-//                yearClicked = String.valueOf(dateClicked).substring(30, 34);
             }
 
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
-                // Change title to visible month
+                // Get current month and change title to visible month and year
                 String dateSelected = String.valueOf(firstDayOfNewMonth);
                 String month = dateSelected.substring(4, 7);
                 String year = String.valueOf(firstDayOfNewMonth.getYear());
-                Log.d("hallo scroll year", ""+ firstDayOfNewMonth.getYear() + "");
                 currentMonth.setText(month);
                 currentMonth.append(" " + year);
             }
@@ -139,9 +133,11 @@ public class AddTaskFragment extends DialogFragment {
         return view;
     }
 
-    public void dateToLong () {
+    // Converts month format
+    public void monthFormat () {
         // Convert month from string to int
         try {
+            // Convert month using the simple date format
             Date x = new SimpleDateFormat("MMM").parse(monthClicked);
             Calendar c = Calendar.getInstance();
             c.setTime(x);
@@ -153,41 +149,44 @@ public class AddTaskFragment extends DialogFragment {
             } else {
                 monthClicked = String.valueOf(monthInt + 1);
             }
-
         } catch (ParseException e) {
             Log.d("hallo_i", "" + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    // Adds task with chosen name, frequency and startdate to Firebase
     public void addTaskToDatabase () {
         // Get chosen frequency
         frequencyS.getSelectedItem().toString();
         freq = frequencyS.getSelectedItemPosition();
 
+        // Access Firebase
         mDatabase.child("groups").child(groupID).
-                addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        groupColor = String.valueOf(dataSnapshot.child("color").getValue());
-                        memberIDList.clear();
+            addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // Get groupcolor from group
+                    groupColor = String.valueOf(dataSnapshot.child("color").getValue());
 
-                        Log.d("hallo groupcolor??", " " + groupColor);
+                    // Clear member ID list before filling it
+                    memberIDList.clear();
 
-                        for (DataSnapshot childDataSnapshot : dataSnapshot.child("users").getChildren()) {
-                            Log.d("hallo is dit user id?", "" + childDataSnapshot.getKey());
-                            User member = childDataSnapshot.getValue(User.class);
-                            Log.d("HALLO", "username???  " + member.username);
-                            memberIDList.add(member.id);
-                        }
-                            createTask();
+                    // Loop over members of group
+                    for (DataSnapshot childDataSnapshot : dataSnapshot.child("users").getChildren()) {
+                        // Get member and add to list
+                        User member = childDataSnapshot.getValue(User.class);
+                        memberIDList.add(member.id);
                     }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
-                    }
-                });
+                    // Add task to Firebase
+                    createTask();
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
+                }
+            });
 
 
 
@@ -213,6 +212,7 @@ public class AddTaskFragment extends DialogFragment {
 //                });
     }
 
+    // Adds task to every user and corresponding group in Firebase
     public void createTask () {
         // classify members randomly in schedule
         Collections.shuffle(memberIDList);
@@ -226,10 +226,10 @@ public class AddTaskFragment extends DialogFragment {
         T.groupname = groupName;
         T.groupcolor = groupColor;
 
-        // Add task to group and user in Firebase
+        // Add task to group in Firebase
         mDatabase.child("groups").child(groupID).child("tasks").child(T.taskname).setValue(T);
-//        mDatabase.child("users").child(U.id).child("personal groups").child(groupID).child("tasks").child(T.taskname).setValue(T);
 
+        // Add ask to every group members child in Firebase
         for (int i = 0; i < memberIDList.size(); i++) {
             mDatabase.child("users").child(memberIDList.get(i)).child("personal groups").child(groupID).child("tasks").child(T.taskname).setValue(T);
         }
@@ -245,5 +245,23 @@ public class AddTaskFragment extends DialogFragment {
                     }
                 });
         alertDialog.show();
+    }
+
+    @Override
+    public void onClick(View view) {
+        // Check is user selected a start date
+        if (epoch == 0) {
+            LoginActivity.showAlert("Please choose a start date", getActivity());
+            return;
+        }
+
+        // Convert selected month to a usable format
+        monthFormat();
+
+        // Add task to Firebase
+        addTaskToDatabase();
+
+        // 'Close' fragment
+        taskFrag.setVisibility(View.GONE);
     }
 }

@@ -13,7 +13,9 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by minor on 29/01/2018.
+ * Created by Nathalie Borst on 29/01/2018.
+ * Adapter that takes a list with User.class objects as input and shows user's name and e-mail
+ * address
  */
 
 public class GroupMembersAdapter extends BaseAdapter {
@@ -24,7 +26,6 @@ public class GroupMembersAdapter extends BaseAdapter {
         this.mContext = mContext;
         this.mMemberslist = mMemberslist;
     }
-
 
     @Override
     public int getCount() {

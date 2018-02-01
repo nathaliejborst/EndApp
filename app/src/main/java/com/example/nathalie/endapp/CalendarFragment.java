@@ -1,13 +1,11 @@
 package com.example.nathalie.endapp;
 
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,15 +25,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-
-import static java.util.Calendar.MILLISECOND;
 
 
 /**
@@ -44,16 +39,12 @@ import static java.util.Calendar.MILLISECOND;
 public class CalendarFragment extends Fragment {
     private DatabaseReference mDatabase;
 
-
-
-    CompactCalendarView compactCalendar;
+    private CompactCalendarView compactCalendar;
     private ListView showTasks;
     private TextView currentMonth;
-    private Toolbar toolbar;
     private ArrayList<String> dayEvents = new ArrayList<String>();
     private ArrayList<String> tasksList = new ArrayList<String>();
     private ArrayList<Task> mTasksList = new ArrayList<Task>();
-    private ArrayList<String> usersGroupsIDList= new ArrayList<String>();
 
     User U;
 
@@ -66,6 +57,7 @@ public class CalendarFragment extends Fragment {
         // Get views from XML
         showTasks = (ListView) view.findViewById(R.id.usertasks_lv);
         currentMonth = (TextView) view.findViewById(R.id.month_tv);
+        compactCalendar = (CompactCalendarView) view.findViewById(R.id.compactcalendar_view);
 
         // Get instance of database
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -74,44 +66,42 @@ public class CalendarFragment extends Fragment {
         U = new User();
         U.setCurrentuser();
 
-        // Set title to current month
+        // Set title of calendar to current month
         Calendar cal = Calendar.getInstance();
-        Date date = new Date();
+//        Date date = new Date();
         currentMonth.setText(new SimpleDateFormat("MMM").format(cal.getTime()));
         currentMonth.append(" " + new SimpleDateFormat("yyyy").format(cal.getTime()));
 
-
-        compactCalendar = (CompactCalendarView) view.findViewById(R.id.compactcalendar_view);
+        // Initialize compact calendar
         compactCalendar.setShouldDrawDaysHeader(true);
-
         compactCalendar.setUseThreeLetterAbbreviation(true);
 
         // Connect with database
         getTasksFromDatabase();
 
+        // Set listeners on calendar
         compactCalendar.setListener(new CompactCalendarView.CompactCalendarViewListener() {
             @Override
             public void onDayClick(Date dateClicked) {
-                // Clear list otherwise tasks will be shown multiple times if date is clicked more than once
+                // Clear list otherwise tasks will be shown multiple times if date is clicked more
+                // than once
                 dayEvents.clear();
                 mTasksList.clear();
 
-                // Get events on selected date and add to String list
+                // Get events from selected date and add to list
                 List<Event> events = compactCalendar.getEvents(dateClicked);
                 for (int i = 0; i < events.size(); i++) {
                     dayEvents.add(String.valueOf(events.get(i).getData()));
-                    Object o = events.get(i).getData();
-                    Task OT = (Task)o;
+                    Object O = events.get(i).getData();
+                    Task T = (Task) O;
 
-                    mTasksList.add(OT);
-                    Log.d("hallo taskclass? name", "" + OT.taskname);
-
-//                    mTasksList.add((Task) events.get(i).getData());
+                    // Add every task on selected day to list
+                    mTasksList.add(T);
                 }
-                fillTasksListview();
-//                fillSimpleListView(dayEvents);
-            }
 
+                // Show tasks of clicked day in custom listview
+                fillTasksListview();
+            }
             @Override
             public void onMonthScroll(Date firstDayOfNewMonth) {
                 // Get month and year from selected month
@@ -139,53 +129,58 @@ public class CalendarFragment extends Fragment {
 
 
     }
+//
+//    public void fillSimpleListView(final ArrayList list) {
+//        ListAdapter theAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
+//
+//        // Set the adapter
+//        showTasks.setAdapter(theAdapter);
+//        showTasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
+//                String eventData = showTasks.getItemAtPosition(i).toString();
+//
+//                String groupName = eventData.substring(eventData.indexOf("(")+1, eventData.indexOf(")"));
+//                Log.d("hallo grouname clicked", "" + groupName);
+//
+////                showTaskDescription("bla bla bla bla bla beschrijving bla bla bla bla");
+//            }
+//        });
+//    }
 
-    public void fillSimpleListView(final ArrayList list) {
-        ListAdapter theAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
-
-        // Set the adapter
-        showTasks.setAdapter(theAdapter);
-        showTasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
-                String eventData = showTasks.getItemAtPosition(i).toString();
-
-                String groupName = eventData.substring(eventData.indexOf("(")+1, eventData.indexOf(")"));
-                Log.d("hallo grouname clicked", "" + groupName);
-
-//                showTaskDescription("bla bla bla bla bla beschrijving bla bla bla bla");
-            }
-        });
-    }
-
+    // Get user's tasks from Firebase and create events on calendar
     public void getTasksFromDatabase () {
+        // Acess Firebase
         mDatabase.child("users").child(U.id).child("personal groups")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        // Clear list before adding tasks
-                        tasksList.clear();
+            .addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // Clear list before adding tasks
+                    tasksList.clear();
 
-                        // Get details for every group of user
-                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                            for (DataSnapshot taskDataSnapshot : childDataSnapshot.child("tasks").getChildren()) {
-                                // Retreive task from Firebase
-                                Task T = taskDataSnapshot.getValue(Task.class);
-                                long l = Long.parseLong(T.startdate);
+                    // Get details for every group of user
+                    for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                        //Loop over every task of group
+                        for (DataSnapshot taskDataSnapshot : childDataSnapshot.child("tasks").getChildren()) {
+                            // Retreive task from Firebase
+                            Task T = taskDataSnapshot.getValue(Task.class);
+                            // Add events and create schedule using startdate and frequency of
+                            // task
+                            createSchedule(T);
+//                                long l = Long.parseLong(T.startdate);
 
-                                ArrayList<String> schedule = T.schedule;
-                                createSchedule(T);
-                            }
+//                                ArrayList<String> schedule = T.schedule;
                         }
                     }
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
-                    }
-                });
-
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.w("hallo_i", "onCancelled: " + databaseError.getMessage());
+                }
+            });
     }
 
+    // Create a schedule for every task given the frequency, startdate and amount of groupmembers
     public void createSchedule (Task T) {
         // By default a task gets repeated a 100 times per user
         int repetition = 100;
@@ -196,7 +191,6 @@ public class CalendarFragment extends Fragment {
         for (int i = 0; i < members; i++) {
             if(T.schedule.get(i).equals(U.id)) {
                 position = i;
-                Log.d("hallo, POSITION: ", "" + position);
             }
         }
 
@@ -247,8 +241,8 @@ public class CalendarFragment extends Fragment {
         }
     }
 
+    // Create an event for every task and add to calendar
     public void addEvent (Calendar c, Task T) {
-        Date result = c.getTime();
         Long taskDate = c.getTimeInMillis();
 
         // Add task to calendar with the the groupcolor as marker color
@@ -270,9 +264,11 @@ public class CalendarFragment extends Fragment {
                 event = new Event(Color.rgb(255, 69, 0), taskDate, T);
                 break;
         }
+        // Add event to calendar
         compactCalendar.addEvent(event);
     }
 
+    // Fill listview with tasks of selected day
     public void fillTasksListview () {
         // Set adapter for listview
         CalendarTaskAdapter cAdapter= new CalendarTaskAdapter(getContext(), mTasksList);
@@ -285,17 +281,5 @@ public class CalendarFragment extends Fragment {
                 LoginActivity.showAlert(view.getTag().toString(), getActivity());
             }
         });
-    }
-
-    public void showTaskDescription (String alert) {
-        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
-        alertDialog.setTitle(alert);
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
     }
 }

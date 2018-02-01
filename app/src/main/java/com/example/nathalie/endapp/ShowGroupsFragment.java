@@ -16,6 +16,12 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.nathalie.endapp.Group;
+import com.example.nathalie.endapp.GroupDetailsFragment;
+import com.example.nathalie.endapp.GroupnameFragment;
+import com.example.nathalie.endapp.R;
+import com.example.nathalie.endapp.ShowGroupsAdapter;
+import com.example.nathalie.endapp.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;

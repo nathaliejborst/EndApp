@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by minor on 23/01/2018.
+ * Created by Nathalie on 23/01/2018.
+ * Class contains a color, groupname, tasksAmount, usersAmount and a getter and setter for
+ * groupname and color.
  */
 
 public class Group {
@@ -34,21 +36,5 @@ public class Group {
 
     public void setGroupname(String groupname) {
         this.groupname = groupname;
-    }
-
-    public String getTasksAmount() {
-        return tasksAmount;
-    }
-
-    public void setTasksAmount(String tasksAmount) {
-        this.tasksAmount = tasksAmount;
-    }
-
-    public String getUsersAmount() {
-        return usersAmount;
-    }
-
-    public void setUsersAmount(String usersAmount) {
-        this.usersAmount = usersAmount;
     }
 }

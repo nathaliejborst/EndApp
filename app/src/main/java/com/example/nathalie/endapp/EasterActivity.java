@@ -1,4 +1,4 @@
-package com.example.nathalie.endapp.Activities;
+package com.example.nathalie.endapp;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;

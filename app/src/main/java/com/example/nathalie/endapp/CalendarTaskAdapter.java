@@ -14,14 +14,14 @@ import java.util.List;
 
 /**
  * Created by Nathalie Borst on 29/01/2018.
- * Adapter that takes a list with a Task.class as input and shows taskname, frequency and starting
+ * Adapter that takes a list with Task.class objects as input and shows taskname, frequency and starting
  * dat per task
  */
 
 public class CalendarTaskAdapter extends BaseAdapter {
     private Context mContext;
     private List<Task> mTasklist;
-    ArrayList<String> frequencies = new ArrayList<String>();
+    private ArrayList<String> frequencies = new ArrayList<String>();
 
     public CalendarTaskAdapter(Context mContext, List<Task> mTasklist) {
         this.mContext = mContext;
@@ -32,7 +32,6 @@ public class CalendarTaskAdapter extends BaseAdapter {
         frequencies.add("daily");
         frequencies.add("weekly");
         frequencies.add("monthly");
-
     }
 
 
@@ -54,6 +53,7 @@ public class CalendarTaskAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
+        // Get views from XML
         View v = View.inflate(mContext, R.layout.item_task_list, null);
         TextView taskName = (TextView)v.findViewById(R.id.taskname_tv);
         TextView frequency = (TextView)v.findViewById(R.id.frequency_tv);
@@ -69,6 +69,7 @@ public class CalendarTaskAdapter extends BaseAdapter {
         frequency.setText(frequencies.get(mTasklist.get(i).frequency));
         startdate.setText(startdateString);
 
+        // Set tag to groupname
         v.setTag(String.valueOf(mTasklist.get(i).groupname));
 
         return v;
