@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -37,7 +38,8 @@ import java.util.ArrayList;
 public class FindUsersFragment extends Fragment implements View.OnClickListener {
     private DatabaseReference mDatabase;
 
-    private TextView receivedGroupName, showUsersToAdd, line;
+    private TextView receivedGroupName, showUsersToAdd;
+    private View line;
     private EditText searchUser;
     private ListView resultsList, usersToAddList;
     private Button findUsers, createGroup;
@@ -81,7 +83,7 @@ public class FindUsersFragment extends Fragment implements View.OnClickListener 
 
         // Get views from XML for left frame
         receivedGroupName = (TextView) view.findViewById(R.id.received_group_name_tv);
-        line = (TextView) view.findViewById(R.id.line_tv);
+        line = (View) view.findViewById(R.id.line_v);
         searchUser = (EditText) view.findViewById(R.id.input_find_by_email);
         findUsers = (Button) view.findViewById(R.id.find_button);
         resultsList = (ListView) view.findViewById(R.id.results_lv);
@@ -193,14 +195,12 @@ public class FindUsersFragment extends Fragment implements View.OnClickListener 
         GroupMembersAdapter cAdapter= new GroupMembersAdapter(getContext(), resultDetailsList);
         resultsList.setAdapter(cAdapter);
 
+        // Add animation on list item click and adds users to group
         resultsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 addUserToGroup(i);
-
-                // Change color of button and line when one user is added to list
-                line.setTextColor(Color.parseColor("#66B2FF"));
-                createGroup.setTextColor(Color.parseColor("#66B2FF"));
+                createGroup.startAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.slide_in_left));
             }
         });
 

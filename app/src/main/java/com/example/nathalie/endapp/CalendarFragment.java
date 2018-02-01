@@ -129,24 +129,6 @@ public class CalendarFragment extends Fragment {
 
 
     }
-//
-//    public void fillSimpleListView(final ArrayList list) {
-//        ListAdapter theAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, list);
-//
-//        // Set the adapter
-//        showTasks.setAdapter(theAdapter);
-//        showTasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
-//                String eventData = showTasks.getItemAtPosition(i).toString();
-//
-//                String groupName = eventData.substring(eventData.indexOf("(")+1, eventData.indexOf(")"));
-//                Log.d("hallo grouname clicked", "" + groupName);
-//
-////                showTaskDescription("bla bla bla bla bla beschrijving bla bla bla bla");
-//            }
-//        });
-//    }
 
     // Get user's tasks from Firebase and create events on calendar
     public void getTasksFromDatabase () {
@@ -167,9 +149,6 @@ public class CalendarFragment extends Fragment {
                             // Add events and create schedule using startdate and frequency of
                             // task
                             createSchedule(T);
-//                                long l = Long.parseLong(T.startdate);
-
-//                                ArrayList<String> schedule = T.schedule;
                         }
                     }
                 }

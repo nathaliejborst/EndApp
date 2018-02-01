@@ -93,6 +93,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     // Re-directs to show groups fragment
     public void onGroupsItemClicked () {
         // Opens groupsfragment and adds to backstack
+
+        Log.d("hallo in functie group", "");
+
         ShowGroupsFragment showGroupsFragment = new ShowGroupsFragment();
         getSupportFragmentManager().beginTransaction().
                 replace(R.id.frame, showGroupsFragment).addToBackStack(null).commit();

@@ -65,39 +65,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         logOutButton.setOnClickListener(this);
         tasksButton.setOnClickListener(this);
 
-//
-//        logOutButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//            FirebaseAuth.getInstance().signOut();
-//            Intent intent = new Intent(getActivity(), LoginActivity.class);
-//            startActivity(intent);
-//            }
-//        });
-//
-//        tasksButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//            // Show/Hide tasks and change buttoncolor on click
-//            if(!taskvisible){
-//                tasksButton.setTextColor(Color.parseColor("#66B2FF"));
-//                lineTasks.setBackgroundColor(Color.parseColor("#66B2FF"));
-//                tasksList.setVisibility(View.VISIBLE);
-//
-//                // Set boolean to true
-//                taskvisible = true;
-//            } else {
-//                tasksButton.setTextColor(Color.parseColor("#FF8000"));
-//                lineTasks.setBackgroundColor(Color.parseColor("#FF8000"));
-//                tasksList.setVisibility(View.INVISIBLE);
-//
-//                // Set boolean to false
-//                taskvisible = false;
-//            }
-//            }
-//        });
         return view;
-
     }
 
     // Get user's tasks from Firebase and fill listview
@@ -176,15 +144,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             case R.id.tasks_button:
                 // Shows/Hides tasks and change buttoncolor on click
                 if(!taskvisible){
-                    tasksButton.setTextColor(Color.parseColor("#66B2FF"));
-                    lineTasks.setBackgroundColor(Color.parseColor("#66B2FF"));
+                    tasksButton.setTextColor(getResources().getColor(R.color.colorPrimary));
+                    lineTasks.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                     tasksList.setVisibility(View.VISIBLE);
 
                     // Set boolean to true
                     taskvisible = true;
                 } else {
-                    tasksButton.setTextColor(Color.parseColor("#FF8000"));
-                    lineTasks.setBackgroundColor(Color.parseColor("#FF8000"));
+                    tasksButton.setTextColor(getResources().getColor(R.color.mainOrange));
+                    lineTasks.setBackgroundColor(getResources().getColor(R.color.mainOrange));
                     tasksList.setVisibility(View.INVISIBLE);
 
                     // Set boolean to false

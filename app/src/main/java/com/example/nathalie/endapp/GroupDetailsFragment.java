@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -31,10 +32,11 @@ public class GroupDetailsFragment extends Fragment implements View.OnClickListen
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
 
-    private TextView groupNameTV, addTaskTV, taskLine, colorOverlay;
-    private String groupName, groupID, taskName, groupColor;
+    private TextView groupNameTV, colorOverlay, addTaskTV;
+    private String groupName, groupID, taskName;
     private ListView membersLV, tasksLV;
-    private Button addTask, addMember, submitTask;
+    private View taskLine;
+    private Button addTask;
     private EditText addTaskET;
     private ImageButton pickDate;
 
@@ -59,13 +61,12 @@ public class GroupDetailsFragment extends Fragment implements View.OnClickListen
 
         // Get views from XML
         groupNameTV = (TextView) view.findViewById(R.id.group_name_tv);
-        addTaskTV = (TextView) view.findViewById(R.id.tasks_tv);
-        taskLine = (TextView) view.findViewById(R.id.tasks_line);
+        addTaskTV = (TextView) view.findViewById(R.id.tasks_title_tv);
+        taskLine = (View) view.findViewById(R.id.task_line);
         colorOverlay = (TextView) view.findViewById(R.id.color_overlay_tv);
         membersLV = (ListView) view.findViewById(R.id.members_lv);
         tasksLV = (ListView) view.findViewById(R.id.tasks_lv);
         addTask = (Button) view.findViewById(R.id.add_task_button) ;
-        submitTask = (Button) view.findViewById(R.id.submit_task_button) ;
         addTaskET = (EditText) view.findViewById(R.id.add_task_et);
         pickDate = (ImageButton) view.findViewById(R.id.pick_date_button);
 
@@ -89,53 +90,6 @@ public class GroupDetailsFragment extends Fragment implements View.OnClickListen
         addTask.setOnClickListener(this);
         pickDate.setOnClickListener(this);
 
-//        addTask.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // Set hint
-//                addTaskET.setHint("Enter taskname");
-//
-//                // Change visibility of views
-//                addTaskET.setVisibility(View.VISIBLE);
-//                pickDate.setVisibility(View.VISIBLE);
-//
-//                addTaskTV.setVisibility(View.INVISIBLE);
-//                addTask.setVisibility(View.INVISIBLE);
-//                taskLine.setVisibility(View.INVISIBLE);
-//
-//            }
-//        });
-//
-//        pickDate.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//            // Get taskname from view
-//            taskName = addTaskET.getText().toString();
-//
-//            // Check if group already has a task with the same name
-//            if (checkTaskDuplicate()) {
-//                LoginActivity.showAlert("This task already exists", getActivity());
-//                return;
-//            }
-//            // Check if user filled in a taskname
-//            if (addTaskET.getText().toString().matches("")) {
-//                LoginActivity.showAlert("Please fill in a taskname first", getActivity());
-//                return;
-//            }
-//
-//            // Open datepicker dialog to add task
-//            pickStartDate();
-//
-//            // Change visibilities of views back to default
-//            addTaskET.setText("");
-//            addTaskET.setVisibility(View.INVISIBLE);
-//            pickDate.setVisibility(View.INVISIBLE);
-//
-//            addTaskTV.setVisibility(View.VISIBLE);
-//            addTask.setVisibility(View.VISIBLE);
-//            taskLine.setVisibility(View.VISIBLE);
-//            }
-//        });
         return view;
     }
 
@@ -201,16 +155,6 @@ public class GroupDetailsFragment extends Fragment implements View.OnClickListen
         // Set adapter for listview
         GroupMembersAdapter cAdapter= new GroupMembersAdapter(getContext(), mMembersList);
         membersLV.setAdapter(cAdapter);
-
-        //
-//        membersLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                String clickedItem = String.valueOf(view.getTag());
-//                showAlert(clickedItem);
-//                tasksLV.invalidateViews();
-//            }
-//        });
     }
 
     // Fills right listview with tasks of group
@@ -253,18 +197,6 @@ public class GroupDetailsFragment extends Fragment implements View.OnClickListen
         dialogFragment.show(getActivity().getFragmentManager(),"Simple Dialog");
     }
 
-//    public void showAlert (String alert) {
-//        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
-//        alertDialog.setTitle(alert);
-//        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-//                new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.dismiss();
-//                    }
-//                });
-//        alertDialog.show();
-//    }
-
     // Sets color of the header to the corresponding groupcolor
     public void setOverlayColor () {
         // Prevent error is retrieving data from Firebase is slow
@@ -299,7 +231,7 @@ public class GroupDetailsFragment extends Fragment implements View.OnClickListen
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.tasks_tv:
+            case R.id.add_task_button:
                 // Set hint
                 addTaskET.setHint("Enter taskname");
 
@@ -330,6 +262,7 @@ public class GroupDetailsFragment extends Fragment implements View.OnClickListen
 
                 // Change visibilities of views back to default
                 addTaskET.setText("");
+
                 addTaskET.setVisibility(View.INVISIBLE);
                 pickDate.setVisibility(View.INVISIBLE);
 

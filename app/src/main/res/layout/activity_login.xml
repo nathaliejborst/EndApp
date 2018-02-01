@@ -68,7 +68,6 @@
             android:singleLine="true"
             android:hint="E-mail address"
             android:inputType="textEmailAddress"
-            android:text="o@o.nl"
             android:layout_gravity="center"/>
 
     </android.support.design.widget.TextInputLayout>
@@ -85,7 +84,6 @@
             android:singleLine="true"
             android:inputType="textPassword"
             android:hint="Password"
-            android:text="hoihoi"
             android:layout_gravity="center"/>
 
     </android.support.design.widget.TextInputLayout>

@@ -16,29 +16,50 @@
                 android:id="@+id/received_group_name_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="-3dp"
                 android:layout_marginLeft="4dp"
                 android:text="jjj"
-                android:textColor="@color/mainOrange"
+                android:textColor="@color/caldroid_black"
                 android:textSize="18dp" />
 
-            <TextView
-            android:id="@+id/line_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/mainOrange"
-            android:textSize="6dp"
-            android:text="_________________________________________________________________________________________________________________________________________________________" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-            <Button
-            android:id="@+id/create_group_button"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_gravity="right"
-            android:text="Create group  "
-            android:background="@color/caldroid_transparent"
-            android:textColor="@color/mainOrange"
-            android:textAlignment="viewEnd"
-            android:textSize="11dp" />
+                <View
+                android:id="@+id/line_v"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:layout_marginTop="16dp"
+                android:background="@color/mainOrange" />
+
+                <Button
+                    android:id="@+id/create_group_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_gravity="right"
+                    android:text="Create group  "
+                    android:layout_weight="2"
+                    android:background="@color/caldroid_transparent"
+                    android:textColor="@color/mainOrange"
+                    android:textSize="11dp" />
+
+            </LinearLayout>
+
+
+
+            <!--<TextView-->
+            <!--android:id="@+id/line_tv"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textColor="@color/mainOrange"-->
+            <!--android:textSize="6dp"-->
+            <!--android:text="_________________________________________________________________________________________________________________________________________________________" />-->
+
+
 </LinearLayout>
 
 

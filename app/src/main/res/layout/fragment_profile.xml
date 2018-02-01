@@ -44,6 +44,7 @@
         android:orientation="horizontal">
 
         <View
+            android:id="@+id/view1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:visibility="invisible"
